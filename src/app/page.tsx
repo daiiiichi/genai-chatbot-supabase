@@ -1,5 +1,5 @@
-import { Textarea } from "../components/ui/textarea";
-import AppHeader from "@/components/app-header";
+import AppHeader from "@/components/layout/app-header";
+import MessageInput from "@/components/forms/message-input";
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
       <div className="p-4">
         <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">
           <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
-            <Textarea />
+            <MessageInput />
           </div>
         </div>
       </div>
