@@ -1,6 +1,7 @@
 "use client";
 
 import { Message } from "../../types/chat";
+import { TypingIndicator } from "../ui/typing-indicator";
 
 type ChatBubbleProps = {
   messages: Message[];
@@ -34,9 +35,9 @@ export default function ChatBubble({
               }`}
             >
               <div
-                className={`prose break-words whitespace-normal rounded-lg px-3 py-2 ${
+                className={`prose break-words whitespace-normal rounded-lg px-3 py-2 inline-flex ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground inline-flex text-start"
+                    ? "bg-primary text-primary-foreground text-start"
                     : "bg-muted text-foreground border"
                 }`}
               >
@@ -45,13 +46,13 @@ export default function ChatBubble({
             </div>
           </div>
         ))}
-      {isLoading && chunkedAnswer && (
+      {isLoading && (
         <div className={`flex gap-3 justify-start`}>
           <div className={`max-w-[85%] flex-1 sm:max-w-[75%] justify-end`}>
             <div
-              className={`prose break-words whitespace-normal rounded-lg px-3 py-2 bg-muted text-foreground border`}
+              className={`prose break-words whitespace-normal rounded-lg px-3 py-2 inline-flex bg-muted text-foreground border`}
             >
-              {chunkedAnswer}
+              {chunkedAnswer ? chunkedAnswer : <TypingIndicator />}
             </div>
           </div>
         </div>
