@@ -1,5 +1,5 @@
-import AppHeader from "@/components/layout/app-header";
-import MessageInput from "@/components/forms/message-input";
+import AppHeader from "@/app/components/layout/app-header";
+import MessageInput from "@/app/components/forms/message-input";
 
 export default function Home() {
   return (
