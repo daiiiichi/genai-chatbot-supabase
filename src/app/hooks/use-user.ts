@@ -5,9 +5,12 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase-client";
 
 export default function useUser() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);

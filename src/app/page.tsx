@@ -10,15 +10,17 @@ export default function Home() {
   const { session } = useUser();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!session) {
-  //     router.push("/login");
-  //   }
-  // }, [session, router]);
+  useEffect(() => {
+    // sessionがnullのときのみリダイレクト
+    if (session === null) {
+      router.push("/login");
+    }
+  }, [session, router]);
 
-  // if (!session) {
-  //   return <div>Loading...</div>;
-  // }
+  // sessionがundefinedならローディング
+  if (session === undefined) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
