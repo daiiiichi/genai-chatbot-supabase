@@ -10,15 +10,15 @@ export default function Home() {
   const { session } = useUser();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!session) {
-      router.push("/login");
-    }
-  }, [session, router]);
+  // useEffect(() => {
+  //   if (!session) {
+  //     router.push("/login");
+  //   }
+  // }, [session, router]);
 
-  if (!session) {
-    return <div>Loading...</div>;
-  }
+  // if (!session) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <>
