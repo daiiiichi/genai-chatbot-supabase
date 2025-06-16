@@ -5,8 +5,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
 import generateTitle from "@/app/lib/generate-chat-title";
 import { insertMessage } from "@/app/lib/supabase/messages";
-import { useAtomValue, useAtom } from "jotai";
-import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
+import { useAtomValue, useAtom, useSetAtom } from "jotai";
+import {
+  chatHistoriesAtom,
+  currentChatIdAtom,
+  messagesAtom,
+} from "@/app/atoms/chat";
+import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 type SubmitButtonProps = {
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
@@ -25,6 +30,7 @@ export default function SubmitButton({
 }: SubmitButtonProps) {
   const currentChatId = useAtomValue(currentChatIdAtom);
   const [messages, setMessages] = useAtom(messagesAtom);
+  const setChatHistories = useSetAtom(chatHistoriesAtom);
 
   const sendMessage = async (userInput: string) => {
     const userMessageObj: Message = {
@@ -84,6 +90,8 @@ export default function SubmitButton({
 
     setChunkedAnswer("");
     await generateTitle(currentChatId, assistantAnswerObj);
+    const updatedChathistories = await fetchChatHistories();
+    setChatHistories(updatedChathistories);
   };
 
   return (

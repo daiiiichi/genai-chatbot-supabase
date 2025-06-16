@@ -15,29 +15,30 @@ import {
 
 import { usePathname } from "next/navigation";
 import { supabase } from "@/app/lib/supabase/supabase-client";
-import { useSetAtom } from "jotai";
-import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
+import { useSetAtom, useAtom } from "jotai";
+import {
+  chatHistoriesAtom,
+  currentChatIdAtom,
+  messagesAtom,
+} from "@/app/atoms/chat";
 import { Message } from "@/app/types/chat";
+import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
   const pathname = usePathname();
   const showSidebar = !pathname.startsWith("/login");
 
-  const [chatHistories, setChatHistories] = useState<any[]>([]);
+  const [chatHistories, setChatHistories] = useAtom(chatHistoriesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const setMessages = useSetAtom(messagesAtom);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase.from("chat_sessions").select();
-      if (!error && data) {
-        setChatHistories(data);
-      } else {
-        setChatHistories([]);
-      }
+    const loadHistories = async () => {
+      const data = await fetchChatHistories();
+      setChatHistories(data);
     };
-    fetchData();
+    loadHistories();
   }, []);
 
   const toJST = (date: string): string => {
