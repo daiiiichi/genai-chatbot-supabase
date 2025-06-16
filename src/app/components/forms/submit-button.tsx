@@ -4,6 +4,7 @@ import { ArrowUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
 import { supabase } from "@/app/lib/supabase-client";
+import generateTitle from "@/app/lib/generate-chat-title";
 
 type SubmitButtonProps = {
   messages: Message[];
@@ -97,37 +98,7 @@ export default function SubmitButton({
     setChunkedAnswer("");
     setIsLoading(false);
 
-    const { data } = await supabase
-      .from("chat_sessions")
-      .select("title")
-      .eq("chat_session_id", currentChatId);
-
-    let chatTitle = data && data.length > 0 ? data[0].title : null;
-    if (chatTitle === "New Chat") {
-      const titleRes = await fetch("/api/generate-title", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              id: 0,
-              role: "system",
-              content:
-                "あなたは検索履歴のタイトル作成に秀でています。以下の会話を参考にタイトルを４語以内で考えてください。返答は必ずタイトルのみでお願いします。",
-            },
-            assistantAnswerObj,
-          ],
-        }),
-      });
-      chatTitle = await titleRes.text();
-    }
-
-    const now = new Date().toISOString();
-
-    const { error: updateError } = await supabase
-      .from("chat_sessions")
-      .update({ title: chatTitle, updated_at: now })
-      .eq("chat_session_id", currentChatId);
+    await generateTitle(currentChatId, assistantAnswerObj);
   };
 
   return (
