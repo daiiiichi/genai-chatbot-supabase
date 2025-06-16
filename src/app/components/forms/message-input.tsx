@@ -12,7 +12,7 @@ type MessageInputProps = {
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
-  currentChatId: string | null;
+  currentChatId: string;
 };
 
 export default function MessageInput({

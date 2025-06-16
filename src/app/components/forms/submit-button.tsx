@@ -3,8 +3,9 @@
 import { ArrowUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
-import { supabase } from "@/app/lib/supabase-client";
+import { supabase } from "@/app/lib/supabase/supabase-client";
 import generateTitle from "@/app/lib/generate-chat-title";
+import { insertMessage } from "@/app/lib/supabase/messages";
 
 type SubmitButtonProps = {
   messages: Message[];
@@ -14,7 +15,7 @@ type SubmitButtonProps = {
   setIsLoading: (isLoading: boolean) => void;
   userInput: string;
   setUserInput: (input: string) => void;
-  currentChatId: string | null;
+  currentChatId: string;
 };
 
 export default function SubmitButton({
@@ -38,21 +39,11 @@ export default function SubmitButton({
     setIsLoading(true);
     setUserInput("");
 
-    if (!currentChatId) {
-      throw new Error("Session ID is required to insert a message.");
-    }
-    console.log(currentChatId);
-    const { error: insertError } = await supabase.from("messages").insert([
-      {
-        chat_session_id: currentChatId,
-        role: userMessageObj.role,
-        content: userMessageObj.content,
-        created_at: new Date().toISOString(),
-      },
-    ]);
-    if (insertError) {
-      console.error("Insert error:", insertError.message);
-    }
+    await insertMessage({
+      chat_session_id: currentChatId,
+      role: userMessageObj.role,
+      content: userMessageObj.content,
+    });
 
     const res = await fetch("/api/chat", {
       method: "POST",
@@ -86,14 +77,11 @@ export default function SubmitButton({
     ];
 
     setMessages(addAssistantMessages);
-    await supabase.from("messages").insert([
-      {
-        chat_session_id: currentChatId,
-        role: assistantAnswerObj.role,
-        content: assistantAnswerObj.content,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    await insertMessage({
+      chat_session_id: currentChatId,
+      role: assistantAnswerObj.role,
+      content: assistantAnswerObj.content,
+    });
 
     setChunkedAnswer("");
     setIsLoading(false);

@@ -5,16 +5,14 @@ import MessageInput from "../forms/message-input";
 import { Message } from "../../types/chat";
 import ChatBubble from "../forms/chat-bubble";
 import { v4 as uuidv4 } from "uuid";
-import { supabase } from "@/app/lib/supabase-client";
+import { supabase } from "@/app/lib/supabase/supabase-client";
 import useAuth from "@/app/hooks/use-auth";
 
 export default function AppMain() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chunkedAnswer, setChunkedAnswer] = useState("");
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-    null
-  );
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("");
   const { session } = useAuth();
 
   const startNewChat = async () => {
