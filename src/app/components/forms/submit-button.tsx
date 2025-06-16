@@ -5,28 +5,27 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
 import generateTitle from "@/app/lib/generate-chat-title";
 import { insertMessage } from "@/app/lib/supabase/messages";
+import { useAtomValue, useAtom } from "jotai";
+import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
 
 type SubmitButtonProps = {
-  messages: Message[];
-  setMessages: (messages: Message[]) => void;
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
   userInput: string;
   setUserInput: (input: string) => void;
-  currentChatId: string;
 };
 
 export default function SubmitButton({
-  messages,
-  setMessages,
   setChunkedAnswer,
   setIsLoading,
   isLoading,
   userInput,
   setUserInput,
-  currentChatId,
 }: SubmitButtonProps) {
+  const currentChatId = useAtomValue(currentChatIdAtom);
+  const [messages, setMessages] = useAtom(messagesAtom);
+
   const sendMessage = async (userInput: string) => {
     const userMessageObj: Message = {
       role: "user",
@@ -81,10 +80,10 @@ export default function SubmitButton({
       role: assistantAnswerObj.role,
       content: assistantAnswerObj.content,
     });
+    setIsLoading(false);
 
     setChunkedAnswer("");
     await generateTitle(currentChatId, assistantAnswerObj);
-    setIsLoading(false);
   };
 
   return (

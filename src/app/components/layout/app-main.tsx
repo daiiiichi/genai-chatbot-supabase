@@ -7,12 +7,14 @@ import ChatBubble from "../forms/chat-bubble";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/app/lib/supabase/supabase-client";
 import useAuth from "@/app/hooks/use-auth";
+import { useSetAtom } from "jotai";
+import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
 
 export default function AppMain() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const setCurrentChatId = useSetAtom(currentChatIdAtom);
+  const setMessages = useSetAtom(messagesAtom);
   const [isLoading, setIsLoading] = useState(false);
   const [chunkedAnswer, setChunkedAnswer] = useState("");
-  const [selectedSessionId, setSelectedSessionId] = useState<string>("");
   const { session } = useAuth();
 
   const startNewChat = async () => {
@@ -32,7 +34,7 @@ export default function AppMain() {
     ]);
 
     setMessages([{ role: "system", content: "You are a helpful assistant." }]);
-    setSelectedSessionId(chatSessionId);
+    setCurrentChatId(chatSessionId);
   };
 
   useEffect(() => {
@@ -46,18 +48,11 @@ export default function AppMain() {
     <div className="p-4">
       <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">
         <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
-          <ChatBubble
-            messages={messages}
-            isLoading={isLoading}
-            chunkedAnswer={chunkedAnswer}
-          />
+          <ChatBubble isLoading={isLoading} chunkedAnswer={chunkedAnswer} />
           <MessageInput
-            messages={messages}
-            setMessages={setMessages}
             setChunkedAnswer={setChunkedAnswer}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
-            currentChatId={selectedSessionId}
           />
         </div>
       </div>

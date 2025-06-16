@@ -1,19 +1,20 @@
 "use client";
 
-import { Message } from "../../types/chat";
+import { useAtom } from "jotai";
+import { messagesAtom } from "@/app/atoms/chat";
 import { TypingIndicator } from "../ui/typing-indicator";
 
 type ChatBubbleProps = {
-  messages: Message[];
   isLoading: boolean;
   chunkedAnswer: string;
 };
 
 export default function ChatBubble({
-  messages,
   isLoading,
   chunkedAnswer,
 }: ChatBubbleProps) {
+  const [messages] = useAtom(messagesAtom);
+
   return (
     <div
       className={`flex-col overflow-y-auto relative w-full flex-1 space-y-4 pe-2 ${
