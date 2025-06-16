@@ -73,28 +73,34 @@ export default function AppSidebar() {
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {chatHistories.map((data) => (
-                  <SidebarMenuItem key={data.chat_session_id}>
-                    <SidebarMenuButton asChild>
-                      <div className="h-auto">
-                        <a className="grid !p-1 !gap-1">
-                          <span className="text-xs">
-                            {toJST(data.updated_at)}
-                          </span>
-                          <strong className="text-md">{data.title}</strong>
-                        </a>
-                        <button
-                          type="button"
-                          title="Delete chat"
-                          className="text-gray-300 hover:text-primary ml-auto"
-                          onClick={() => deleteChat(data.chat_session_id)}
-                        >
-                          <Trash2 />
-                        </button>
-                      </div>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {chatHistories
+                  .sort(
+                    (a, b) =>
+                      new Date(b.updated_at).getTime() -
+                      new Date(a.updated_at).getTime()
+                  )
+                  .map((data) => (
+                    <SidebarMenuItem key={data.chat_session_id}>
+                      <SidebarMenuButton asChild>
+                        <div className="h-auto">
+                          <a className="grid !p-1 !gap-1">
+                            <span className="text-xs">
+                              {toJST(data.updated_at)}
+                            </span>
+                            <strong className="text-md">{data.title}</strong>
+                          </a>
+                          <button
+                            type="button"
+                            title="Delete chat"
+                            className="text-gray-300 hover:text-primary ml-auto"
+                            onClick={() => deleteChat(data.chat_session_id)}
+                          >
+                            <Trash2 />
+                          </button>
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
