@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import MessageInput from "../forms/message-input";
-import { Message } from "../../types/chat";
 import ChatBubble from "../forms/chat-bubble";
-import { v4 as uuidv4 } from "uuid";
-import { supabase } from "@/app/lib/supabase/supabase-client";
 import useAuth from "@/app/hooks/use-auth";
 import { useSetAtom } from "jotai";
 import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
+import { startNewChat } from "@/app/lib/chat";
 
 export default function AppMain() {
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
@@ -17,29 +15,9 @@ export default function AppMain() {
   const [chunkedAnswer, setChunkedAnswer] = useState("");
   const { session } = useAuth();
 
-  const startNewChat = async () => {
-    const chatSessionId = uuidv4();
-    const now = new Date().toISOString();
-    if (!session || !session.user) {
-      throw new Error("User session is not available.");
-    }
-    await supabase.from("chat_sessions").insert([
-      {
-        chat_session_id: chatSessionId,
-        user_id: session.user.id,
-        title: "New Chat",
-        created_at: now,
-        updated_at: now,
-      },
-    ]);
-
-    setMessages([{ role: "system", content: "You are a helpful assistant." }]);
-    setCurrentChatId(chatSessionId);
-  };
-
   useEffect(() => {
     if (session && session.user) {
-      startNewChat();
+      startNewChat(session, setMessages, setCurrentChatId);
       console.log("New chat session started.");
     }
   }, [session?.user?.id]);

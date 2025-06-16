@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, FilePlus2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,8 @@ import {
 } from "@/app/atoms/chat";
 import { Message } from "@/app/types/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
+import { startNewChat } from "@/app/lib/chat";
+import useAuth from "@/app/hooks/use-auth";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -32,6 +34,7 @@ export default function AppSidebar() {
   const [chatHistories, setChatHistories] = useAtom(chatHistoriesAtom);
   const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const setMessages = useSetAtom(messagesAtom);
+  const { session } = useAuth();
 
   useEffect(() => {
     const loadHistories = async () => {
@@ -99,6 +102,25 @@ export default function AppSidebar() {
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a
+                      onClick={() =>
+                        startNewChat(session, setMessages, setCurrentChatId)
+                      }
+                    >
+                      <FilePlus2 />
+                      <span>New Chat</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>chat</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {chatHistories
