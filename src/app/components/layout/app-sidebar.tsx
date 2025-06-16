@@ -15,6 +15,9 @@ import {
 
 import { usePathname } from "next/navigation";
 import { supabase } from "@/app/lib/supabase/supabase-client";
+import { useSetAtom } from "jotai";
+import { currentChatIdAtom, messagesAtom } from "@/app/atoms/chat";
+import { Message } from "@/app/types/chat";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -22,6 +25,8 @@ export default function AppSidebar() {
   const showSidebar = !pathname.startsWith("/login");
 
   const [chatHistories, setChatHistories] = useState<any[]>([]);
+  const setCurrentChatId = useSetAtom(currentChatIdAtom);
+  const setMessages = useSetAtom(messagesAtom);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +70,28 @@ export default function AppSidebar() {
     }
   };
 
+  const selectChat = async (selectedChatId: string) => {
+    setCurrentChatId(selectedChatId);
+    const { data } = await supabase
+      .from("messages")
+      .select()
+      .eq("chat_session_id", selectedChatId);
+
+    if (data) {
+      const messages: Message[] = data
+        .sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+        .map((m) => ({
+          role: m.role as "user" | "assistant" | "system",
+          content: m.content as string,
+        }));
+
+      setMessages(messages);
+    }
+  };
+
   return (
     showSidebar && (
       <Sidebar>
@@ -82,7 +109,10 @@ export default function AppSidebar() {
                   .map((data) => (
                     <SidebarMenuItem key={data.chat_session_id}>
                       <SidebarMenuButton asChild>
-                        <div className="h-auto">
+                        <div
+                          className="h-auto"
+                          onClick={() => selectChat(data.chat_session_id)}
+                        >
                           <a className="grid !p-1 !gap-1">
                             <span className="text-xs">
                               {toJST(data.updated_at)}
