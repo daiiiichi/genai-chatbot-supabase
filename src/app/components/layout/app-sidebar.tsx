@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +15,6 @@ import {
 
 import { usePathname } from "next/navigation";
 import { supabase } from "@/app/lib/supabase/supabase-client";
-
-import { useEffect, useState } from "react";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -51,6 +51,20 @@ export default function AppSidebar() {
     return JST;
   };
 
+  const deleteChat = async (selectedChatId: string) => {
+    const { error } = await supabase
+      .from("chat_sessions")
+      .delete()
+      .eq("chat_session_id", selectedChatId);
+    if (!error) {
+      setChatHistories((prev) =>
+        prev.filter((chat) => chat.chat_session_id !== selectedChatId)
+      );
+    } else {
+      alert("削除に失敗しました");
+    }
+  };
+
   return (
     showSidebar && (
       <Sidebar>
@@ -62,12 +76,22 @@ export default function AppSidebar() {
                 {chatHistories.map((data) => (
                   <SidebarMenuItem key={data.chat_session_id}>
                     <SidebarMenuButton asChild>
-                      <a className="grid h-auto !p-1 !gap-1">
-                        <span className="text-xs">
-                          {toJST(data.updated_at)}
-                        </span>
-                        <strong className="text-md">{data.title}</strong>
-                      </a>
+                      <div className="h-auto">
+                        <a className="grid !p-1 !gap-1">
+                          <span className="text-xs">
+                            {toJST(data.updated_at)}
+                          </span>
+                          <strong className="text-md">{data.title}</strong>
+                        </a>
+                        <button
+                          type="button"
+                          title="Delete chat"
+                          className="text-gray-300 hover:text-primary ml-auto"
+                          onClick={() => deleteChat(data.chat_session_id)}
+                        >
+                          <Trash2 />
+                        </button>
+                      </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

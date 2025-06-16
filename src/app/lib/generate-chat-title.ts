@@ -23,7 +23,7 @@ export default async function generateTitle(
             id: 0,
             role: "system",
             content:
-              "あなたは検索履歴のタイトル作成に秀でています。以下の会話を参考にタイトルを４語以内で考えてください。返答は必ずタイトルのみでお願いします。",
+              "あなたは検索履歴のタイトル作成に秀でています。以下の会話を参考にタイトルを6語以内で考えてください。返答は必ずタイトルのみでお願いします。",
           },
           assistantAnswerObj,
         ],
