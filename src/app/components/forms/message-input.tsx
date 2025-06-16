@@ -12,6 +12,7 @@ type MessageInputProps = {
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
+  currentChatId: string | null;
 };
 
 export default function MessageInput({
@@ -20,6 +21,7 @@ export default function MessageInput({
   setChunkedAnswer,
   setIsLoading,
   isLoading,
+  currentChatId,
 }: MessageInputProps) {
   const [userInput, setUserInput] = useState("");
 
@@ -41,6 +43,7 @@ export default function MessageInput({
           setIsLoading={setIsLoading}
           userInput={userInput}
           setUserInput={setUserInput}
+          currentChatId={currentChatId}
         />
       </div>
     </div>

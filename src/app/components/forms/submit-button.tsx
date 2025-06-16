@@ -3,6 +3,7 @@
 import { ArrowUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
+import { supabase } from "@/app/lib/supabase-client";
 
 type SubmitButtonProps = {
   messages: Message[];
@@ -12,6 +13,7 @@ type SubmitButtonProps = {
   setIsLoading: (isLoading: boolean) => void;
   userInput: string;
   setUserInput: (input: string) => void;
+  currentChatId: string | null;
 };
 
 export default function SubmitButton({
@@ -22,21 +24,39 @@ export default function SubmitButton({
   isLoading,
   userInput,
   setUserInput,
+  currentChatId,
 }: SubmitButtonProps) {
   const sendMessage = async (userInput: string) => {
-    const newMessages: Message[] = [
-      ...messages,
-      { id: messages.length + 1, role: "user", content: userInput },
-    ];
-    setMessages(newMessages);
+    const userMessageObj: Message = {
+      role: "user",
+      content: userInput,
+    };
+    const addUserMessages: Message[] = [...messages, userMessageObj];
+    setMessages(addUserMessages);
     setChunkedAnswer("");
     setIsLoading(true);
     setUserInput("");
 
+    if (!currentChatId) {
+      throw new Error("Session ID is required to insert a message.");
+    }
+    console.log(currentChatId);
+    const { error: insertError } = await supabase.from("messages").insert([
+      {
+        chat_session_id: currentChatId,
+        role: userMessageObj.role,
+        content: userMessageObj.content,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+    if (insertError) {
+      console.error("Insert error:", insertError.message);
+    }
+
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: newMessages }),
+      body: JSON.stringify({ messages: addUserMessages }),
     });
 
     const reader = res.body?.getReader();
@@ -55,12 +75,59 @@ export default function SubmitButton({
       setChunkedAnswer((prev) => prev + chunk);
     }
 
-    setMessages([
-      ...newMessages,
-      { id: newMessages.length + 1, role: "assistant", content: fullreply },
+    const assistantAnswerObj: Message = {
+      role: "assistant",
+      content: fullreply,
+    };
+    const addAssistantMessages: Message[] = [
+      ...addUserMessages,
+      assistantAnswerObj,
+    ];
+
+    setMessages(addAssistantMessages);
+    await supabase.from("messages").insert([
+      {
+        chat_session_id: currentChatId,
+        role: assistantAnswerObj.role,
+        content: assistantAnswerObj.content,
+        created_at: new Date().toISOString(),
+      },
     ]);
+
     setChunkedAnswer("");
     setIsLoading(false);
+
+    const { data } = await supabase
+      .from("chat_sessions")
+      .select("title")
+      .eq("chat_session_id", currentChatId);
+
+    let chatTitle = data && data.length > 0 ? data[0].title : null;
+    if (chatTitle === "New Chat") {
+      const titleRes = await fetch("/api/generate-title", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            {
+              id: 0,
+              role: "system",
+              content:
+                "あなたは検索履歴のタイトル作成に秀でています。以下の会話を参考にタイトルを４語以内で考えてください。返答は必ずタイトルのみでお願いします。",
+            },
+            assistantAnswerObj,
+          ],
+        }),
+      });
+      chatTitle = await titleRes.text();
+    }
+
+    const now = new Date().toISOString();
+
+    const { error: updateError } = await supabase
+      .from("chat_sessions")
+      .update({ title: chatTitle, updated_at: now })
+      .eq("chat_session_id", currentChatId);
   };
 
   return (
