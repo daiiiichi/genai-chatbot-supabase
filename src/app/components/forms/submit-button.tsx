@@ -3,7 +3,6 @@
 import { ArrowUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
-import { supabase } from "@/app/lib/supabase/supabase-client";
 import generateTitle from "@/app/lib/generate-chat-title";
 import { insertMessage } from "@/app/lib/supabase/messages";
 
@@ -84,9 +83,8 @@ export default function SubmitButton({
     });
 
     setChunkedAnswer("");
-    setIsLoading(false);
-
     await generateTitle(currentChatId, assistantAnswerObj);
+    setIsLoading(false);
   };
 
   return (

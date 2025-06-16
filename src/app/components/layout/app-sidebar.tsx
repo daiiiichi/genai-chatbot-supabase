@@ -1,5 +1,4 @@
 "use client";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,38 +12,44 @@ import {
 } from "../ui/sidebar";
 
 import { usePathname } from "next/navigation";
+import { supabase } from "@/app/lib/supabase/supabase-client";
 
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
+import { useEffect, useState } from "react";
 
 export default function AppSidebar() {
+  // ログイン画面の場合、サイドバーを表示させない設定
   const pathname = usePathname();
   const showSidebar = !pathname.startsWith("/login");
+
+  const [chatHistories, setChatHistories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase.from("chat_sessions").select();
+      if (!error && data) {
+        setChatHistories(data);
+      } else {
+        setChatHistories([]);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const toJST = (date: string): string => {
+    const JST = new Date(date)
+      .toLocaleString("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(/\//g, "-")
+      .replace(" ", " ");
+    return JST;
+  };
 
   return (
     showSidebar && (
@@ -54,12 +59,14 @@ export default function AppSidebar() {
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
+                {chatHistories.map((data) => (
+                  <SidebarMenuItem key={data.chat_session_id}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
+                      <a className="grid h-auto !p-1 !gap-1">
+                        <span className="text-xs">
+                          {toJST(data.updated_at)}
+                        </span>
+                        <strong className="text-md">{data.title}</strong>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

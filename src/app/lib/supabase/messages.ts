@@ -1,4 +1,5 @@
 // lib/supabase/messages.ts
+import { Message } from "@/app/types/chat";
 import { supabase } from "./supabase-client";
 
 export async function insertMessage({
@@ -7,7 +8,7 @@ export async function insertMessage({
   content,
 }: {
   chat_session_id: string;
-  role: "system" | "user" | "assistant";
+  role: Message["role"];
   content: string;
 }) {
   if (!chat_session_id) {
