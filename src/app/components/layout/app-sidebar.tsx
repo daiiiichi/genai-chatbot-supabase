@@ -30,7 +30,7 @@ export default function AppSidebar() {
   const showSidebar = !pathname.startsWith("/login");
 
   const [chatHistories, setChatHistories] = useAtom(chatHistoriesAtom);
-  const setCurrentChatId = useSetAtom(currentChatIdAtom);
+  const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const setMessages = useSetAtom(messagesAtom);
 
   useEffect(() => {
@@ -111,7 +111,11 @@ export default function AppSidebar() {
                     <SidebarMenuItem key={data.chat_session_id}>
                       <SidebarMenuButton asChild>
                         <div
-                          className="h-auto"
+                          className={`h-auto ${
+                            currentChatId === data.chat_session_id
+                              ? "bg-gray-100 dark:bg-neutral-800"
+                              : ""
+                          }`}
                           onClick={() => selectChat(data.chat_session_id)}
                         >
                           <a className="grid !p-1 !gap-1">
