@@ -48,4 +48,43 @@ const startNewChat = async (
   setCurrentChatId(chatSessionId);
 };
 
-export { startNewChat };
+const selectChat = async (
+  selectedChatId: string,
+  setCurrentChatId: (chatId: string) => void,
+  setMessages: (messages: Message[]) => void
+) => {
+  setCurrentChatId(selectedChatId);
+  const { data } = await supabase
+    .from("messages")
+    .select()
+    .eq("chat_session_id", selectedChatId);
+
+  if (data) {
+    const messages: Message[] = data
+      .sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+      .map((m) => ({
+        role: m.role as "user" | "assistant" | "system",
+        content: m.content as string,
+      }));
+
+    setMessages(messages);
+  }
+};
+
+const deleteChat = async (
+  selectedChatId: string,
+  session: Session | null | undefined,
+  setMessages: (messages: Message[]) => void,
+  setCurrentChatId: (chatId: string) => void
+) => {
+  await supabase
+    .from("chat_sessions")
+    .delete()
+    .eq("chat_session_id", selectedChatId);
+  await startNewChat(session, setMessages, setCurrentChatId);
+};
+
+export { startNewChat, selectChat, deleteChat };
