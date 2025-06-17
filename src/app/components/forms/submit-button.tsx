@@ -9,28 +9,26 @@ import { useAtomValue, useAtom, useSetAtom } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
+  isLoadingAtom,
   messagesAtom,
 } from "@/app/atoms/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 type SubmitButtonProps = {
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
   userInput: string;
   setUserInput: (input: string) => void;
 };
 
 export default function SubmitButton({
   setChunkedAnswer,
-  setIsLoading,
-  isLoading,
   userInput,
   setUserInput,
 }: SubmitButtonProps) {
   const currentChatId = useAtomValue(currentChatIdAtom);
   const [messages, setMessages] = useAtom(messagesAtom);
   const setChatHistories = useSetAtom(chatHistoriesAtom);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
 
   const sendMessage = async (userInput: string) => {
     const userMessageObj: Message = {
