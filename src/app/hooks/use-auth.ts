@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase-client";
+import { supabase } from "../lib/supabase/supabase-client";
 
-export default function useUser() {
+export default function useAuth() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
@@ -29,6 +29,8 @@ export default function useUser() {
   function signOut() {
     supabase.auth.signOut();
   }
+
+  console.log("useAuth session:", session?.user);
 
   return {
     session,

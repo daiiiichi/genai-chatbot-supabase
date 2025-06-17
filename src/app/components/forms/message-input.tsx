@@ -7,16 +7,12 @@ import FileUploadButton from "../ui/file-upload-button";
 import { Message } from "../../types/chat";
 
 type MessageInputProps = {
-  messages: Message[];
-  setMessages: (messages: Message[]) => void;
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
 };
 
 export default function MessageInput({
-  messages,
-  setMessages,
   setChunkedAnswer,
   setIsLoading,
   isLoading,
@@ -34,8 +30,6 @@ export default function MessageInput({
       <div className="flex items-center justify-between gap-2 pt-2">
         <FileUploadButton />
         <SubmitButton
-          messages={messages}
-          setMessages={setMessages}
           setChunkedAnswer={setChunkedAnswer}
           isLoading={isLoading}
           setIsLoading={setIsLoading}

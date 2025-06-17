@@ -1,6 +1,7 @@
 "use client";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 
+import { useEffect, useState } from "react";
+import { Trash2, FilePlus2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,38 +14,92 @@ import {
 } from "../ui/sidebar";
 
 import { usePathname } from "next/navigation";
-
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
+import { supabase } from "@/app/lib/supabase/supabase-client";
+import { useSetAtom, useAtom } from "jotai";
+import {
+  chatHistoriesAtom,
+  currentChatIdAtom,
+  messagesAtom,
+} from "@/app/atoms/chat";
+import { Message } from "@/app/types/chat";
+import { fetchChatHistories } from "@/app/lib/chat-histories";
+import { startNewChat } from "@/app/lib/chat";
+import useAuth from "@/app/hooks/use-auth";
 
 export default function AppSidebar() {
+  // ログイン画面の場合、サイドバーを表示させない設定
   const pathname = usePathname();
   const showSidebar = !pathname.startsWith("/login");
+
+  const [chatHistories, setChatHistories] = useAtom(chatHistoriesAtom);
+  const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
+  const setMessages = useSetAtom(messagesAtom);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    const initialize = async () => {
+      if (session && session.user) {
+        await startNewChat(session, setMessages, setCurrentChatId);
+        console.log("useEffectでStartNewChat");
+        const histories = await fetchChatHistories();
+        setChatHistories(histories);
+      }
+    };
+
+    initialize();
+  }, [session]);
+
+  const toJST = (date: string): string => {
+    const JST = new Date(date)
+      .toLocaleString("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(/\//g, "-")
+      .replace(" ", " ");
+    return JST;
+  };
+
+  const deleteChat = async (selectedChatId: string) => {
+    const { error } = await supabase
+      .from("chat_sessions")
+      .delete()
+      .eq("chat_session_id", selectedChatId);
+    if (!error) {
+      setChatHistories((prev) =>
+        prev.filter((chat) => chat.chat_session_id !== selectedChatId)
+      );
+    } else {
+      alert("削除に失敗しました");
+    }
+  };
+
+  const selectChat = async (selectedChatId: string) => {
+    setCurrentChatId(selectedChatId);
+    const { data } = await supabase
+      .from("messages")
+      .select()
+      .eq("chat_session_id", selectedChatId);
+
+    if (data) {
+      const messages: Message[] = data
+        .sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+        .map((m) => ({
+          role: m.role as "user" | "assistant" | "system",
+          content: m.content as string,
+        }));
+
+      setMessages(messages);
+    }
+  };
 
   return (
     showSidebar && (
@@ -54,16 +109,66 @@ export default function AppSidebar() {
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a
+                      onClick={async () => {
+                        await startNewChat(
+                          session,
+                          setMessages,
+                          setCurrentChatId
+                        );
+                        const data = await fetchChatHistories();
+                        setChatHistories(data);
+                      }}
+                    >
+                      <FilePlus2 />
+                      <span>New Chat</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>chat</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {chatHistories
+                  .sort(
+                    (a, b) =>
+                      new Date(b.updated_at).getTime() -
+                      new Date(a.updated_at).getTime()
+                  )
+                  .map((data) => (
+                    <SidebarMenuItem key={data.chat_session_id}>
+                      <SidebarMenuButton asChild>
+                        <div
+                          className={`h-auto ${
+                            currentChatId === data.chat_session_id
+                              ? "bg-gray-100 dark:bg-neutral-800"
+                              : ""
+                          }`}
+                          onClick={() => selectChat(data.chat_session_id)}
+                        >
+                          <a className="grid !p-1 !gap-1">
+                            <span className="text-xs">
+                              {toJST(data.updated_at)}
+                            </span>
+                            <strong className="text-md">{data.title}</strong>
+                          </a>
+                          <button
+                            type="button"
+                            title="Delete chat"
+                            className="text-gray-300 hover:text-primary ml-auto"
+                            onClick={() => deleteChat(data.chat_session_id)}
+                          >
+                            <Trash2 />
+                          </button>
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

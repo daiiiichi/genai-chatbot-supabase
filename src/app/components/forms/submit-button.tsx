@@ -3,10 +3,17 @@
 import { ArrowUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Message } from "../../types/chat";
+import generateTitle from "@/app/lib/generate-chat-title";
+import { insertMessage } from "@/app/lib/supabase/messages";
+import { useAtomValue, useAtom, useSetAtom } from "jotai";
+import {
+  chatHistoriesAtom,
+  currentChatIdAtom,
+  messagesAtom,
+} from "@/app/atoms/chat";
+import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 type SubmitButtonProps = {
-  messages: Message[];
-  setMessages: (messages: Message[]) => void;
   setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
@@ -15,28 +22,37 @@ type SubmitButtonProps = {
 };
 
 export default function SubmitButton({
-  messages,
-  setMessages,
   setChunkedAnswer,
   setIsLoading,
   isLoading,
   userInput,
   setUserInput,
 }: SubmitButtonProps) {
+  const currentChatId = useAtomValue(currentChatIdAtom);
+  const [messages, setMessages] = useAtom(messagesAtom);
+  const setChatHistories = useSetAtom(chatHistoriesAtom);
+
   const sendMessage = async (userInput: string) => {
-    const newMessages: Message[] = [
-      ...messages,
-      { id: messages.length + 1, role: "user", content: userInput },
-    ];
-    setMessages(newMessages);
+    const userMessageObj: Message = {
+      role: "user",
+      content: userInput,
+    };
+    const addUserMessages: Message[] = [...messages, userMessageObj];
+    setMessages(addUserMessages);
     setChunkedAnswer("");
     setIsLoading(true);
     setUserInput("");
 
+    await insertMessage({
+      chat_session_id: currentChatId,
+      role: userMessageObj.role,
+      content: userMessageObj.content,
+    });
+
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: newMessages }),
+      body: JSON.stringify({ messages: addUserMessages }),
     });
 
     const reader = res.body?.getReader();
@@ -55,12 +71,27 @@ export default function SubmitButton({
       setChunkedAnswer((prev) => prev + chunk);
     }
 
-    setMessages([
-      ...newMessages,
-      { id: newMessages.length + 1, role: "assistant", content: fullreply },
-    ]);
-    setChunkedAnswer("");
+    const assistantAnswerObj: Message = {
+      role: "assistant",
+      content: fullreply,
+    };
+    const addAssistantMessages: Message[] = [
+      ...addUserMessages,
+      assistantAnswerObj,
+    ];
+
+    setMessages(addAssistantMessages);
+    await insertMessage({
+      chat_session_id: currentChatId,
+      role: assistantAnswerObj.role,
+      content: assistantAnswerObj.content,
+    });
     setIsLoading(false);
+
+    setChunkedAnswer("");
+    await generateTitle(currentChatId, assistantAnswerObj);
+    const updatedChathistories = await fetchChatHistories();
+    setChatHistories(updatedChathistories);
   };
 
   return (

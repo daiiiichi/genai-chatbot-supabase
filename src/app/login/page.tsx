@@ -1,10 +1,10 @@
 "use client";
 
-import useUser from "@/app/hooks/use-user";
+import useAuth from "@/app/hooks/use-auth";
 import { Button } from "../components/ui/button";
 
 export default function LoginPage() {
-  const { signInWithGithub } = useUser();
+  const { signInWithGithub } = useAuth();
 
   return (
     <div className="flex flex-1 items-center justify-center min-h-screen">
