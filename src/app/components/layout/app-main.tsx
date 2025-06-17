@@ -15,13 +15,6 @@ export default function AppMain() {
   const [chunkedAnswer, setChunkedAnswer] = useState("");
   const { session } = useAuth();
 
-  useEffect(() => {
-    if (session && session.user) {
-      startNewChat(session, setMessages, setCurrentChatId);
-      console.log("New chat session started.");
-    }
-  }, [session?.user?.id]);
-
   return (
     <div className="p-4">
       <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">

@@ -37,12 +37,17 @@ export default function AppSidebar() {
   const { session } = useAuth();
 
   useEffect(() => {
-    const loadHistories = async () => {
-      const data = await fetchChatHistories();
-      setChatHistories(data);
+    const initialize = async () => {
+      if (session && session.user) {
+        await startNewChat(session, setMessages, setCurrentChatId);
+        console.log("useEffectでStartNewChat");
+        const histories = await fetchChatHistories();
+        setChatHistories(histories);
+      }
     };
-    loadHistories();
-  }, []);
+
+    initialize();
+  }, [session]);
 
   const toJST = (date: string): string => {
     const JST = new Date(date)
@@ -107,9 +112,15 @@ export default function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <a
-                      onClick={() =>
-                        startNewChat(session, setMessages, setCurrentChatId)
-                      }
+                      onClick={async () => {
+                        await startNewChat(
+                          session,
+                          setMessages,
+                          setCurrentChatId
+                        );
+                        const data = await fetchChatHistories();
+                        setChatHistories(data);
+                      }}
                     >
                       <FilePlus2 />
                       <span>New Chat</span>
