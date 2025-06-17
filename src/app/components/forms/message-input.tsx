@@ -4,19 +4,12 @@ import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import SubmitButton from "./submit-button";
 import FileUploadButton from "../ui/file-upload-button";
-import { Message } from "../../types/chat";
-
-type MessageInputProps = {
-  setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-};
 
 export default function MessageInput({
   setChunkedAnswer,
-  setIsLoading,
-  isLoading,
-}: MessageInputProps) {
+}: {
+  setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [userInput, setUserInput] = useState("");
 
   return (
@@ -31,8 +24,6 @@ export default function MessageInput({
         <FileUploadButton />
         <SubmitButton
           setChunkedAnswer={setChunkedAnswer}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
           userInput={userInput}
           setUserInput={setUserInput}
         />

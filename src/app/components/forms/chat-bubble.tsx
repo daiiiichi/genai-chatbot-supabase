@@ -1,19 +1,16 @@
 "use client";
 
-import { useAtom } from "jotai";
-import { messagesAtom } from "@/app/atoms/chat";
+import { useAtomValue } from "jotai";
+import { isLoadingAtom, messagesAtom } from "@/app/atoms/chat";
 import { TypingIndicator } from "../ui/typing-indicator";
 
-type ChatBubbleProps = {
-  isLoading: boolean;
-  chunkedAnswer: string;
-};
-
 export default function ChatBubble({
-  isLoading,
   chunkedAnswer,
-}: ChatBubbleProps) {
-  const [messages] = useAtom(messagesAtom);
+}: {
+  chunkedAnswer: string;
+}) {
+  const messages = useAtomValue(messagesAtom);
+  const isLoading = useAtomValue(isLoadingAtom);
 
   return (
     <div

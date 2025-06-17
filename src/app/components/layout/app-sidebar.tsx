@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Trash2, FilePlus2 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +25,7 @@ import { Message } from "@/app/types/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 import { startNewChat } from "@/app/lib/chat";
 import useAuth from "@/app/hooks/use-auth";
+import { toJST } from "@/app/lib/utils";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -47,23 +48,7 @@ export default function AppSidebar() {
     };
 
     initialize();
-  }, [session]);
-
-  const toJST = (date: string): string => {
-    const JST = new Date(date)
-      .toLocaleString("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-      .replace(/\//g, "-")
-      .replace(" ", " ");
-    return JST;
-  };
+  }, [session, setChatHistories, setCurrentChatId, setMessages]);
 
   const deleteChat = async (selectedChatId: string) => {
     const { error } = await supabase
