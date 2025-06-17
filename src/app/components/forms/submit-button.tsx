@@ -11,17 +11,16 @@ import {
   currentChatIdAtom,
   isLoadingAtom,
   messagesAtom,
+  streamedAnswerAtom,
 } from "@/app/atoms/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 type SubmitButtonProps = {
-  setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
   userInput: string;
   setUserInput: (input: string) => void;
 };
 
 export default function SubmitButton({
-  setChunkedAnswer,
   userInput,
   setUserInput,
 }: SubmitButtonProps) {
@@ -29,6 +28,7 @@ export default function SubmitButton({
   const [messages, setMessages] = useAtom(messagesAtom);
   const setChatHistories = useSetAtom(chatHistoriesAtom);
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
+  const setStreamedAnswer = useSetAtom(streamedAnswerAtom);
 
   const sendMessage = async (userInput: string) => {
     // ユーザー入力内容の成型とチャット返答準備
@@ -38,7 +38,7 @@ export default function SubmitButton({
     };
     const addUserMessages: Message[] = [...messages, userMessageObj];
     setMessages(addUserMessages);
-    setChunkedAnswer("");
+    setStreamedAnswer("");
     setIsLoading(true);
     setUserInput("");
 
@@ -69,7 +69,7 @@ export default function SubmitButton({
 
       const chunk = decoder.decode(value);
       fullreply += chunk;
-      setChunkedAnswer((prev) => prev + chunk);
+      setStreamedAnswer((prev) => prev + chunk);
     }
 
     const assistantAnswerObj: Message = {
@@ -90,7 +90,7 @@ export default function SubmitButton({
     });
 
     setIsLoading(false);
-    setChunkedAnswer("");
+    setStreamedAnswer("");
 
     // チャットタイトルの作成とサイドバーのチャットり履歴の更新
     await generateTitle(currentChatId, assistantAnswerObj);

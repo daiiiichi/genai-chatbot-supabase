@@ -14,7 +14,6 @@ import { startNewChat } from "@/app/lib/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 
 export default function AppMain() {
-  const [chunkedAnswer, setChunkedAnswer] = useState("");
   const { session } = useAuth();
   const setMessages = useSetAtom(messagesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
@@ -44,8 +43,8 @@ export default function AppMain() {
     <div className="p-4">
       <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">
         <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
-          <ChatBubble chunkedAnswer={chunkedAnswer} />
-          <MessageInput setChunkedAnswer={setChunkedAnswer} />
+          <ChatBubble />
+          <MessageInput />
         </div>
       </div>
     </div>

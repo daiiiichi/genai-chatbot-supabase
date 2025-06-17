@@ -1,16 +1,17 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { isLoadingAtom, messagesAtom } from "@/app/atoms/chat";
+import {
+  isLoadingAtom,
+  messagesAtom,
+  streamedAnswerAtom,
+} from "@/app/atoms/chat";
 import { TypingIndicator } from "../ui/typing-indicator";
 
-export default function ChatBubble({
-  chunkedAnswer,
-}: {
-  chunkedAnswer: string;
-}) {
+export default function ChatBubble() {
   const messages = useAtomValue(messagesAtom);
   const isLoading = useAtomValue(isLoadingAtom);
+  const streamedAnswer = useAtomValue(streamedAnswerAtom);
 
   return (
     <div
@@ -50,7 +51,7 @@ export default function ChatBubble({
             <div
               className={`prose break-words whitespace-normal rounded-lg px-3 py-2 inline-flex bg-muted text-foreground border`}
             >
-              {chunkedAnswer ? chunkedAnswer : <TypingIndicator />}
+              {streamedAnswer ? streamedAnswer : <TypingIndicator />}
             </div>
           </div>
         </div>

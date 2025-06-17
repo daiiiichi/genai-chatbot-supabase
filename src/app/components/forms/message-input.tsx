@@ -5,11 +5,7 @@ import { Textarea } from "../ui/textarea";
 import SubmitButton from "./submit-button";
 import FileUploadButton from "../ui/file-upload-button";
 
-export default function MessageInput({
-  setChunkedAnswer,
-}: {
-  setChunkedAnswer: React.Dispatch<React.SetStateAction<string>>;
-}) {
+export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
 
   return (
@@ -22,11 +18,7 @@ export default function MessageInput({
       />
       <div className="flex items-center justify-between gap-2 pt-2">
         <FileUploadButton />
-        <SubmitButton
-          setChunkedAnswer={setChunkedAnswer}
-          userInput={userInput}
-          setUserInput={setUserInput}
-        />
+        <SubmitButton userInput={userInput} setUserInput={setUserInput} />
       </div>
     </div>
   );
