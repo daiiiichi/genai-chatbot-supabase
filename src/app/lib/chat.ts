@@ -74,17 +74,18 @@ const selectChat = async (
   }
 };
 
-const deleteChat = async (
-  selectedChatId: string,
-  session: Session | null | undefined,
-  setMessages: (messages: Message[]) => void,
-  setCurrentChatId: (chatId: string) => void
-) => {
+const deleteChat = async (selectedChatId: string) => {
   await supabase
     .from("chat_sessions")
     .delete()
     .eq("chat_session_id", selectedChatId);
-  await startNewChat(session, setMessages, setCurrentChatId);
 };
 
-export { startNewChat, selectChat, deleteChat };
+const deleteAllChats = async (session: Session | null | undefined) => {
+  if (!session || !session.user || !session.user.id) {
+    throw new Error("User session is not available.");
+  }
+  await supabase.from("chat_sessions").delete().eq("user_id", session.user.id);
+};
+
+export { startNewChat, selectChat, deleteChat, deleteAllChats };
