@@ -34,7 +34,7 @@ export default async function generateTitle(
   const now = new Date().toISOString();
 
   // タイトルの更新
-  const { error: updateError } = await supabase
+  await supabase
     .from("chat_sessions")
     .update({ title: chatTitle, updated_at: now })
     .eq("chat_session_id", currentChatId);

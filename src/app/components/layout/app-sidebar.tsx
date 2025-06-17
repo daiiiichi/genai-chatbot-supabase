@@ -48,7 +48,7 @@ export default function AppSidebar() {
     };
 
     initialize();
-  }, [session]);
+  }, [session, setChatHistories, setCurrentChatId, setMessages]);
 
   const deleteChat = async (selectedChatId: string) => {
     const { error } = await supabase
