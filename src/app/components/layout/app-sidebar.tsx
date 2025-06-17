@@ -23,7 +23,7 @@ import {
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 import { startNewChat, selectChat, deleteChat } from "@/app/lib/chat";
 import useAuth from "@/app/hooks/use-auth";
-import { toJST } from "@/app/lib/utils";
+import { cn, toJST } from "@/app/lib/utils";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -86,11 +86,11 @@ export default function AppSidebar() {
                     <SidebarMenuItem key={data.chat_session_id}>
                       <SidebarMenuButton asChild>
                         <div
-                          className={`h-auto ${
-                            currentChatId === data.chat_session_id
-                              ? "bg-gray-100 dark:bg-neutral-800"
-                              : ""
-                          }`}
+                          className={cn(
+                            "h-auto",
+                            currentChatId === data.chat_session_id &&
+                              "bg-gray-100 dark:bg-neutral-800"
+                          )}
                           onClick={() =>
                             selectChat(
                               data.chat_session_id,
