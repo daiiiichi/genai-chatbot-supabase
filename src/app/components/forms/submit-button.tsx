@@ -31,6 +31,7 @@ export default function SubmitButton({
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
 
   const sendMessage = async (userInput: string) => {
+    // ユーザー入力内容の成型とチャット返答準備
     const userMessageObj: Message = {
       role: "user",
       content: userInput,
@@ -41,12 +42,14 @@ export default function SubmitButton({
     setIsLoading(true);
     setUserInput("");
 
+    // ユーザメッセージのsupabaseへの保存
     await insertMessage({
       chat_session_id: currentChatId,
       role: userMessageObj.role,
       content: userMessageObj.content,
     });
 
+    // LLMのメッセージをstreamで受け取る
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,16 +80,19 @@ export default function SubmitButton({
       ...addUserMessages,
       assistantAnswerObj,
     ];
-
     setMessages(addAssistantMessages);
+
+    // LLMの返答をsupabaseに保存
     await insertMessage({
       chat_session_id: currentChatId,
       role: assistantAnswerObj.role,
       content: assistantAnswerObj.content,
     });
-    setIsLoading(false);
 
+    setIsLoading(false);
     setChunkedAnswer("");
+
+    // チャットタイトルの作成とサイドバーのチャットり履歴の更新
     await generateTitle(currentChatId, assistantAnswerObj);
     const updatedChathistories = await fetchChatHistories();
     setChatHistories(updatedChathistories);
