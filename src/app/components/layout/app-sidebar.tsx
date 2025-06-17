@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Trash2, FilePlus2 } from "lucide-react";
+import { Trash2, FilePlus2, Search } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +12,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 import { usePathname } from "next/navigation";
 import { useSetAtom, useAtom } from "jotai";
@@ -67,6 +80,49 @@ export default function AppSidebar() {
                       <FilePlus2 />
                       <span>New Chat</span>
                     </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a>
+                      <Search />
+                      <span>Search Chat</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-8 text-sm">
+                          <Trash2 size={16} />
+                          <span>Delete All Chats</span>
+                        </a>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Delete All Chats Messages</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to permanently delete all
+                            chats? This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="sm:justify-start">
+                          <DialogClose asChild>
+                            <Button type="button" variant="outline">
+                              Close
+                            </Button>
+                          </DialogClose>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            className="ml-auto"
+                          >
+                            Delete
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
