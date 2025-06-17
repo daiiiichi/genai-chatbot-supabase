@@ -1,4 +1,3 @@
-// fetchChatHistories.ts
 import { supabase } from "./supabase/supabase-client";
 
 export const fetchChatHistories = async () => {
