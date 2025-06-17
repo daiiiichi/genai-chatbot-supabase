@@ -8,11 +8,32 @@ const startNewChat = async (
   setMessages: (messages: Message[]) => void,
   setCurrentChatId: (chatId: string) => void
 ) => {
-  const chatSessionId = uuidv4();
-  const now = new Date().toISOString();
   if (!session || !session.user) {
     throw new Error("User session is not available.");
   }
+
+  // すでに "New Chat" があるかチェック
+  const { data: NewChat, error } = await supabase
+    .from("chat_sessions")
+    .select("*")
+    .eq("user_id", session.user.id)
+    .eq("title", "New Chat");
+
+  if (error) {
+    console.error("Error checking existing chats:", error);
+    return;
+  }
+
+  if (NewChat && NewChat.length > 0) {
+    setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+    setCurrentChatId(NewChat[0].chat_session_id);
+    return;
+  }
+
+  // なければ新規作成
+  const chatSessionId = uuidv4();
+  const now = new Date().toISOString();
+
   await supabase.from("chat_sessions").insert([
     {
       chat_session_id: chatSessionId,

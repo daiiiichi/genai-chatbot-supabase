@@ -38,30 +38,19 @@ export default function AppSidebar() {
   const { session } = useAuth();
 
   useEffect(() => {
-    const initialize = async () => {
-      if (session && session.user) {
-        await startNewChat(session, setMessages, setCurrentChatId);
-        console.log("useEffectでStartNewChat");
-        const histories = await fetchChatHistories();
-        setChatHistories(histories);
-      }
+    const fetchHistories = async () => {
+      const histories = await fetchChatHistories();
+      setChatHistories(histories);
     };
-
-    initialize();
-  }, [session, setChatHistories, setCurrentChatId, setMessages]);
+    fetchHistories();
+  });
 
   const deleteChat = async (selectedChatId: string) => {
-    const { error } = await supabase
+    await supabase
       .from("chat_sessions")
       .delete()
       .eq("chat_session_id", selectedChatId);
-    if (!error) {
-      setChatHistories((prev) =>
-        prev.filter((chat) => chat.chat_session_id !== selectedChatId)
-      );
-    } else {
-      alert("削除に失敗しました");
-    }
+    await startNewChat(session, setMessages, setCurrentChatId);
   };
 
   const selectChat = async (selectedChatId: string) => {
