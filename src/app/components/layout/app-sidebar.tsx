@@ -22,8 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 import { usePathname } from "next/navigation";
@@ -34,7 +32,12 @@ import {
   messagesAtom,
 } from "@/app/atoms/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
-import { startNewChat, selectChat, deleteChat } from "@/app/lib/chat";
+import {
+  startNewChat,
+  selectChat,
+  deleteChat,
+  deleteAllChats,
+} from "@/app/lib/chat";
 import useAuth from "@/app/hooks/use-auth";
 import { cn, toJST } from "@/app/lib/utils";
 
@@ -54,7 +57,7 @@ export default function AppSidebar() {
       setChatHistories(histories);
     };
     fetchHistories();
-  });
+  }, [currentChatId]);
 
   return (
     showSidebar && (
@@ -73,8 +76,6 @@ export default function AppSidebar() {
                           setMessages,
                           setCurrentChatId
                         );
-                        const data = await fetchChatHistories();
-                        setChatHistories(data);
                       }}
                     >
                       <FilePlus2 />
@@ -94,7 +95,7 @@ export default function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-8 text-sm">
+                        <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-destructive h-8 text-sm">
                           <Trash2 size={16} />
                           <span>Delete All Chats</span>
                         </a>
@@ -113,13 +114,23 @@ export default function AppSidebar() {
                               Close
                             </Button>
                           </DialogClose>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            className="ml-auto"
-                          >
-                            Delete
-                          </Button>
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              className="ml-auto"
+                              onClick={async () => {
+                                await deleteAllChats(session);
+                                await startNewChat(
+                                  session,
+                                  setMessages,
+                                  setCurrentChatId
+                                );
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </DialogClose>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -164,17 +175,17 @@ export default function AppSidebar() {
                           <button
                             type="button"
                             title="Delete chat"
-                            className="text-gray-300 hover:text-primary ml-auto"
-                            onClick={() =>
-                              deleteChat(
-                                data.chat_session_id,
+                            className="text-gray-300 hover:text-destructive ml-auto mr-1"
+                            onClick={async () => {
+                              await deleteChat(data.chat_session_id);
+                              await startNewChat(
                                 session,
                                 setMessages,
                                 setCurrentChatId
-                              )
-                            }
+                              );
+                            }}
                           >
-                            <Trash2 />
+                            {data.title !== "New Chat" && <Trash2 size={16} />}
                           </button>
                         </div>
                       </SidebarMenuButton>
