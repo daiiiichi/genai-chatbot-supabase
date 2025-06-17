@@ -14,18 +14,16 @@ import {
 } from "../ui/sidebar";
 
 import { usePathname } from "next/navigation";
-import { supabase } from "@/app/lib/supabase/supabase-client";
 import { useSetAtom, useAtom } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
   messagesAtom,
 } from "@/app/atoms/chat";
-import { Message } from "@/app/types/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
-import { startNewChat } from "@/app/lib/chat";
+import { startNewChat, selectChat, deleteChat } from "@/app/lib/chat";
 import useAuth from "@/app/hooks/use-auth";
-import { toJST } from "@/app/lib/utils";
+import { cn, toJST } from "@/app/lib/utils";
 
 export default function AppSidebar() {
   // ログイン画面の場合、サイドバーを表示させない設定
@@ -44,36 +42,6 @@ export default function AppSidebar() {
     };
     fetchHistories();
   });
-
-  const deleteChat = async (selectedChatId: string) => {
-    await supabase
-      .from("chat_sessions")
-      .delete()
-      .eq("chat_session_id", selectedChatId);
-    await startNewChat(session, setMessages, setCurrentChatId);
-  };
-
-  const selectChat = async (selectedChatId: string) => {
-    setCurrentChatId(selectedChatId);
-    const { data } = await supabase
-      .from("messages")
-      .select()
-      .eq("chat_session_id", selectedChatId);
-
-    if (data) {
-      const messages: Message[] = data
-        .sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )
-        .map((m) => ({
-          role: m.role as "user" | "assistant" | "system",
-          content: m.content as string,
-        }));
-
-      setMessages(messages);
-    }
-  };
 
   return (
     showSidebar && (
@@ -118,12 +86,18 @@ export default function AppSidebar() {
                     <SidebarMenuItem key={data.chat_session_id}>
                       <SidebarMenuButton asChild>
                         <div
-                          className={`h-auto ${
-                            currentChatId === data.chat_session_id
-                              ? "bg-gray-100 dark:bg-neutral-800"
-                              : ""
-                          }`}
-                          onClick={() => selectChat(data.chat_session_id)}
+                          className={cn(
+                            "h-auto",
+                            currentChatId === data.chat_session_id &&
+                              "bg-gray-100 dark:bg-neutral-800"
+                          )}
+                          onClick={() =>
+                            selectChat(
+                              data.chat_session_id,
+                              setCurrentChatId,
+                              setMessages
+                            )
+                          }
                         >
                           <a className="grid !p-1 !gap-1">
                             <span className="text-xs">
@@ -135,7 +109,14 @@ export default function AppSidebar() {
                             type="button"
                             title="Delete chat"
                             className="text-gray-300 hover:text-primary ml-auto"
-                            onClick={() => deleteChat(data.chat_session_id)}
+                            onClick={() =>
+                              deleteChat(
+                                data.chat_session_id,
+                                session,
+                                setMessages,
+                                setCurrentChatId
+                              )
+                            }
                           >
                             <Trash2 />
                           </button>
