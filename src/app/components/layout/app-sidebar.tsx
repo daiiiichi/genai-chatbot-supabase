@@ -39,7 +39,6 @@ import {
   deleteChat,
   deleteAllChats,
 } from "@/app/lib/chat";
-import useAuth from "@/app/hooks/use-auth";
 import { cn, toJST } from "@/app/lib/utils";
 
 export default function AppSidebar() {
@@ -51,7 +50,6 @@ export default function AppSidebar() {
   const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const setMessages = useSetAtom(messagesAtom);
   const userId = useAtomValue(userIdAtom);
-  // const { session } = useAuth();
 
   useEffect(() => {
     const fetchHistories = async (user_id: string) => {
