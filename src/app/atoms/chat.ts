@@ -9,6 +9,7 @@ const chatHistoriesAtom = atom<
 >([]);
 const isLoadingAtom = atom<boolean>(false);
 const streamedAnswerAtom = atom<string>("");
+const userIdAtom = atom<string>("");
 
 export {
   currentChatIdAtom,
@@ -16,4 +17,5 @@ export {
   chatHistoriesAtom,
   isLoadingAtom,
   streamedAnswerAtom,
+  userIdAtom,
 };

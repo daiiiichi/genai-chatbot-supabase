@@ -25,11 +25,12 @@ import {
 import { Button } from "../ui/button";
 
 import { usePathname } from "next/navigation";
-import { useSetAtom, useAtom } from "jotai";
+import { useSetAtom, useAtom, useAtomValue } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
   messagesAtom,
+  userIdAtom,
 } from "@/app/atoms/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 import {
@@ -38,7 +39,6 @@ import {
   deleteChat,
   deleteAllChats,
 } from "@/app/lib/chat";
-import useAuth from "@/app/hooks/use-auth";
 import { cn, toJST } from "@/app/lib/utils";
 
 export default function AppSidebar() {
@@ -49,15 +49,17 @@ export default function AppSidebar() {
   const [chatHistories, setChatHistories] = useAtom(chatHistoriesAtom);
   const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const setMessages = useSetAtom(messagesAtom);
-  const { session } = useAuth();
+  const userId = useAtomValue(userIdAtom);
 
   useEffect(() => {
-    const fetchHistories = async () => {
-      const histories = await fetchChatHistories();
+    const fetchHistories = async (user_id: string) => {
+      const histories = await fetchChatHistories(user_id);
       setChatHistories(histories);
     };
-    fetchHistories();
-  }, [currentChatId]);
+    if (userId) {
+      fetchHistories(userId);
+    }
+  }, [currentChatId, userId]);
 
   return (
     showSidebar && (
@@ -72,7 +74,7 @@ export default function AppSidebar() {
                     <a
                       onClick={async () => {
                         await startNewChat(
-                          session,
+                          userId,
                           setMessages,
                           setCurrentChatId
                         );
@@ -120,9 +122,9 @@ export default function AppSidebar() {
                               variant="destructive"
                               className="ml-auto"
                               onClick={async () => {
-                                await deleteAllChats(session);
+                                await deleteAllChats(userId);
                                 await startNewChat(
-                                  session,
+                                  userId,
                                   setMessages,
                                   setCurrentChatId
                                 );
@@ -179,7 +181,7 @@ export default function AppSidebar() {
                             onClick={async () => {
                               await deleteChat(data.chat_session_id);
                               await startNewChat(
-                                session,
+                                userId,
                                 setMessages,
                                 setCurrentChatId
                               );
