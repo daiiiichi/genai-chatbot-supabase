@@ -9,6 +9,7 @@ import {
   chatHistoriesAtom,
   currentChatIdAtom,
   messagesAtom,
+  userIdAtom,
 } from "@/app/atoms/chat";
 import { startNewChat } from "@/app/lib/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
@@ -19,6 +20,7 @@ export default function AppMain() {
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const setChatHistories = useSetAtom(chatHistoriesAtom);
   const [initialized, setInitialized] = useState(false);
+  const setUserId = useSetAtom(userIdAtom);
 
   // ページ立ち上げ時の処理
   useEffect(() => {
@@ -27,13 +29,14 @@ export default function AppMain() {
       if (initialized) return;
 
       setInitialized(true); // "New Chat" の二重作成を防ぐ
+      setUserId(session.user.id);
 
-      const chatHistories = await fetchChatHistories();
+      const chatHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(chatHistories);
 
       await startNewChat(session, setMessages, setCurrentChatId);
 
-      const newHistories = await fetchChatHistories();
+      const newHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(newHistories);
     };
     initialize();

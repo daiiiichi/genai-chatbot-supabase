@@ -12,6 +12,7 @@ import {
   isLoadingAtom,
   messagesAtom,
   streamedAnswerAtom,
+  userIdAtom,
 } from "@/app/atoms/chat";
 import { fetchChatHistories } from "@/app/lib/chat-histories";
 
@@ -29,6 +30,7 @@ export default function SubmitButton({
   const setChatHistories = useSetAtom(chatHistoriesAtom);
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
   const setStreamedAnswer = useSetAtom(streamedAnswerAtom);
+  const userId = useAtomValue(userIdAtom);
 
   const sendMessage = async (userInput: string) => {
     // ユーザー入力内容の成型とチャット返答準備
@@ -94,7 +96,7 @@ export default function SubmitButton({
 
     // チャットタイトルの作成とサイドバーのチャットり履歴の更新
     await generateTitle(currentChatId, assistantAnswerObj);
-    const updatedChathistories = await fetchChatHistories();
+    const updatedChathistories = await fetchChatHistories(userId);
     setChatHistories(updatedChathistories);
   };
 

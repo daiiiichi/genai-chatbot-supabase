@@ -52,12 +52,14 @@ export default function AppSidebar() {
   const { session } = useAuth();
 
   useEffect(() => {
-    const fetchHistories = async () => {
-      const histories = await fetchChatHistories();
+    const fetchHistories = async (user_id: string) => {
+      const histories = await fetchChatHistories(user_id);
       setChatHistories(histories);
     };
-    fetchHistories();
-  }, [currentChatId]);
+    if (session?.user.id) {
+      fetchHistories(session?.user.id);
+    }
+  }, [currentChatId, session?.user.id]);
 
   return (
     showSidebar && (
