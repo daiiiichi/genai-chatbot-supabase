@@ -34,7 +34,7 @@ export default function AppMain() {
       const chatHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(chatHistories);
 
-      await startNewChat(session, setMessages, setCurrentChatId);
+      await startNewChat(session.user.id, setMessages, setCurrentChatId);
 
       const newHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(newHistories);

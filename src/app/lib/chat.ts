@@ -4,11 +4,11 @@ import { Message } from "../types/chat";
 import type { Session } from "@supabase/supabase-js";
 
 const startNewChat = async (
-  session: Session | null | undefined,
+  userId: string,
   setMessages: (messages: Message[]) => void,
   setCurrentChatId: (chatId: string) => void
 ) => {
-  if (!session || !session.user) {
+  if (!userId) {
     throw new Error("User session is not available.");
   }
 
@@ -16,7 +16,7 @@ const startNewChat = async (
   const { data: NewChat, error } = await supabase
     .from("chat_sessions")
     .select("*")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userId)
     .eq("title", "New Chat");
 
   if (error) {
@@ -37,7 +37,7 @@ const startNewChat = async (
   await supabase.from("chat_sessions").insert([
     {
       chat_session_id: chatSessionId,
-      user_id: session.user.id,
+      user_id: userId,
       title: "New Chat",
       created_at: now,
       updated_at: now,
@@ -81,11 +81,11 @@ const deleteChat = async (selectedChatId: string) => {
     .eq("chat_session_id", selectedChatId);
 };
 
-const deleteAllChats = async (session: Session | null | undefined) => {
-  if (!session || !session.user || !session.user.id) {
+const deleteAllChats = async (userId: string) => {
+  if (!userId) {
     throw new Error("User session is not available.");
   }
-  await supabase.from("chat_sessions").delete().eq("user_id", session.user.id);
+  await supabase.from("chat_sessions").delete().eq("user_id", userId);
 };
 
 export { startNewChat, selectChat, deleteChat, deleteAllChats };
