@@ -1,4 +1,4 @@
-import { LLMSelectCombobox } from "../forms/llm-select-combobox";
+import { LLMSelectCombobox } from "../forms/main/llm-select-combobox";
 import { SidebarTrigger } from "../ui/sidebar";
 import UserInformation from "../ui/user-information";
 

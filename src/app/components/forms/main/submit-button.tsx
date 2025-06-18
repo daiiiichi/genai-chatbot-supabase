@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Message } from "../../types/chat";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Message } from "../../../types/chat";
 import generateTitle from "@/app/lib/generate-chat-title";
 import { insertMessage } from "@/app/lib/supabase/messages";
 import { useAtomValue, useAtom, useSetAtom } from "jotai";

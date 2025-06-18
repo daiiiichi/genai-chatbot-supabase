@@ -6,8 +6,8 @@ import {
   messagesAtom,
   streamedAnswerAtom,
 } from "@/app/atoms/chat";
-import { TypingIndicator } from "../ui/typing-indicator";
-import { cn } from "../../lib/utils";
+import { TypingIndicator } from "../../ui/typing-indicator";
+import { cn } from "../../../lib/utils";
 
 export default function ChatBubble() {
   const messages = useAtomValue(messagesAtom);

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import MessageInput from "../forms/message-input";
-import ChatBubble from "../forms/chat-bubble";
+import MessageInput from "../forms/main/message-input";
+import ChatBubble from "../forms/main/chat-bubble";
 import useAuth from "@/app/hooks/use-auth";
 import { useSetAtom } from "jotai";
 import {
