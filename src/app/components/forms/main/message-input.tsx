@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from "../../ui/textarea";
 import SubmitButton from "./submit-button";
-import FileUploadButton from "../ui/file-upload-button";
+import FileUploadButton from "../../ui/file-upload-button";
 
 export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
