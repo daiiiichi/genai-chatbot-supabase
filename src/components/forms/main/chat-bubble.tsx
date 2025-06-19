@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms/chat";
 import { TypingIndicator } from "../../ui/typing-indicator";
@@ -10,9 +11,18 @@ export default function ChatBubble() {
   const messages = useAtomValue(messagesAtom);
   const isLoading = useAtomValue(isLoadingAtom);
   const streamedAnswer = useAtomValue(streamedAnswerAtom);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, isLoading, streamedAnswer]);
 
   return (
     <div
+      ref={chatContainerRef}
       className={cn(
         "flex-col overflow-y-auto relative w-full flex-1 space-y-4 pe-2",
         messages.length > 1 ? "flex" : "hidden"
@@ -54,7 +64,7 @@ export default function ChatBubble() {
         ))}
       {isLoading && (
         <div className="flex gap-3 justify-start">
-          <div className="max-w-[95%] flex-1justify-end">
+          <div className="max-w-[95%] justify-end">
             <div className="break-words whitespace-normal rounded-lg px-3 py-2 bg-muted text-foreground border">
               {streamedAnswer ? (
                 <MarkdownDisplay content={streamedAnswer} />
