@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import MessageInput from "../forms/main/message-input";
 import ChatBubble from "../forms/main/chat-bubble";
-import useAuth from "@/app/hooks/use-auth";
+import useAuth from "@/hooks/use-auth";
 import { useSetAtom } from "jotai";
 import {
   chatHistoriesAtom,

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "./supabase/supabase-client";
-import { Message } from "../types/chat";
+import { Message } from "../../types/chat";
 import type { Session } from "@supabase/supabase-js";
 
 const startNewChat = async (

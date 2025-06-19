@@ -1,5 +1,5 @@
 // lib/supabase/messages.ts
-import { Message } from "@/app/types/chat";
+import { Message } from "@/types/chat";
 import { supabase } from "./supabase-client";
 
 export async function insertMessage({

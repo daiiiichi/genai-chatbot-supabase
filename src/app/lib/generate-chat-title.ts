@@ -1,4 +1,4 @@
-import { Message } from "../types/chat";
+import { Message } from "../../types/chat";
 import { supabase } from "./supabase/supabase-client";
 
 export default async function generateTitle(

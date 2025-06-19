@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { Message } from "../types/chat";
+import { Message } from "../../types/chat";
 import type { Database } from "../../../database.types";
 
 const currentChatIdAtom = atom<string>("");
