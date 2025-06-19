@@ -25,7 +25,13 @@ const startNewChat = async (
   }
 
   if (NewChat && NewChat.length > 0) {
-    setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+    setMessages([
+      {
+        role: "system",
+        content:
+          "あなたは優秀なアシスタントです。ユーザーに返すすべてのメッセージはMarkdown形式で記述してください。プレーンテキストは使用せず、コード、リスト、見出し、表などは適切なMarkdown構文を用いてください。ただし最初の「```markdown」は記述しないでください。",
+      },
+    ]);
     setCurrentChatId(NewChat[0].chat_session_id);
     return;
   }
@@ -44,7 +50,13 @@ const startNewChat = async (
     },
   ]);
 
-  setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+  setMessages([
+    {
+      role: "system",
+      content:
+        "あなたは優秀なアシスタントですユーザーに返すすべてのメッセージはMarkdown形式で記述してください。プレーンテキストは使用せず、コード、リスト、見出し、表などは適切なMarkdown構文を用いてください。ただし最初の「```markdown」は記述しないでください。",
+    },
+  ]);
   setCurrentChatId(chatSessionId);
 };
 
