@@ -25,7 +25,7 @@ export default function MarkdownDisplay({ content }: MarkdownDisplayProps) {
             return match ? (
               <div className="relative bg-white rounded-md overflow-hidden group">
                 <div className="flex justify-between items-center px-[10.8px] pt-2 pb-0 text-xs text-white bg-white">
-                  <span className="uppercase text-gray-500 font-mono text-[10px]">
+                  <span className="text-gray-500 font-mono text-[10px]">
                     {match[1]}
                   </span>
                   <CopyButton content={codeContent} />
