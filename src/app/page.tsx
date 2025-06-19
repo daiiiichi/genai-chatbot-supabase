@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AppHeader from "./components/layout/app-header";
-import AppMain from "./components/layout/app-main";
+import AppHeader from "../components/layout/app-header";
+import AppMain from "../components/layout/app-main";
 import useAuth from "../hooks/use-auth";
 
 export default function Home() {
