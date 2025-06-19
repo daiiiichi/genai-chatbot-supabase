@@ -1,5 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkEmoji from "remark-emoji";
 // @ts-ignore
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // @ts-ignore
@@ -13,7 +14,7 @@ export default function MarkdownDisplay({ content }: MarkdownDisplayProps) {
   return (
     <div className="prose break-words prose-pre:p-0 prose-pre:bg-transparent prose-code:p-0 prose-code:bg-transparent prose-p:leading-relaxed max-w-full whitespace-normal prose-hr:my-4 prose-sm prose-code:before:content-none prose-code:after:content-none">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkEmoji]}
         components={{
           code(props) {
             const { children, className } = props;
