@@ -20,7 +20,6 @@ import DeleteAllChatsButton from "../forms/sidebar/delete-all-chats-button";
 import ChatHistoryList from "../forms/sidebar/chat-history-list";
 
 export default function AppSidebar() {
-  // ログイン画面の場合、サイドバーを表示させない設定
   const pathname = usePathname();
   const showSidebar = !pathname.startsWith("/login");
 
@@ -41,7 +40,7 @@ export default function AppSidebar() {
   return (
     showSidebar && (
       <Sidebar>
-        <SidebarContent>
+        <SidebarContent className="flex flex-col h-screen">
           <SidebarGroup>
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -52,12 +51,15 @@ export default function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-          <SidebarGroup>
+
+          <SidebarGroup className="flex-1 overflow-hidden">
             <SidebarGroupLabel>chat</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <ChatHistoryList />
-              </SidebarMenu>
+            <SidebarGroupContent className="h-full">
+              <div className="h-full overflow-y-auto pr-2">
+                <SidebarMenu>
+                  <ChatHistoryList />
+                </SidebarMenu>
+              </div>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
