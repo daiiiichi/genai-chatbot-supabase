@@ -82,7 +82,13 @@ const selectChat = async (
         content: m.content as string,
       }));
 
-    setMessages(messages);
+    const systemPrompt: Message = {
+      role: "system",
+      content:
+        "あなたは優秀なアシスタントです。回答は常に Markdown 形式で記述してください（コード、リスト、見出し、表などを含む）。プレーンテキストは使用せず、常に適切な Markdown 構文を用いてください。回答には状況に応じて自然な絵文字（例: ✅ 🔍 💡 🚀 など）を使って、読みやすく親しみやすい表現を心がけてください。ただし、マークダウンの冒頭に「```markdown」などは記述しないでください。h2-6は使用してよいですが、h1見出しは使用しないでください。",
+    };
+
+    setMessages([systemPrompt, ...messages]);
   }
 };
 
