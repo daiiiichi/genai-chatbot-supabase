@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { supabase } from "./supabase/supabase-client";
 import { Message } from "../types/chat";
 import type { Session } from "@supabase/supabase-js";
+import { systemPrompts } from "./prompts";
 
 const startNewChat = async (
   userId: string,
@@ -28,8 +29,7 @@ const startNewChat = async (
     setMessages([
       {
         role: "system",
-        content:
-          "あなたは優秀なアシスタントです。回答は常に Markdown 形式で記述してください（コード、リスト、見出し、表などを含む）。プレーンテキストは使用せず、常に適切な Markdown 構文を用いてください。回答には状況に応じて自然な絵文字（例: ✅ 🔍 💡 🚀 など）を使って、読みやすく親しみやすい表現を心がけてください。ただし、マークダウンの冒頭に「```markdown」などは記述しないでください。h2-6は使用してよいですが、h1見出しは使用しないでください。",
+        content: systemPrompts.default,
       },
     ]);
     setCurrentChatId(NewChat[0].chat_session_id);
@@ -53,8 +53,7 @@ const startNewChat = async (
   setMessages([
     {
       role: "system",
-      content:
-        "あなたは優秀なアシスタントです。回答は常に Markdown 形式で記述してください（コード、リスト、見出し、表などを含む）。プレーンテキストは使用せず、常に適切な Markdown 構文を用いてください。回答には状況に応じて自然な絵文字（例: ✅ 🔍 💡 🚀 など）を使って、読みやすく親しみやすい表現を心がけてください。ただし、マークダウンの冒頭に「```markdown」などは記述しないでください。h2-6は使用してよいですが、h1見出しは使用しないでください。",
+      content: systemPrompts.default,
     },
   ]);
   setCurrentChatId(chatSessionId);
@@ -84,8 +83,7 @@ const selectChat = async (
 
     const systemPrompt: Message = {
       role: "system",
-      content:
-        "あなたは優秀なアシスタントです。回答は常に Markdown 形式で記述してください（コード、リスト、見出し、表などを含む）。プレーンテキストは使用せず、常に適切な Markdown 構文を用いてください。回答には状況に応じて自然な絵文字（例: ✅ 🔍 💡 🚀 など）を使って、読みやすく親しみやすい表現を心がけてください。ただし、マークダウンの冒頭に「```markdown」などは記述しないでください。h2-6は使用してよいですが、h1見出しは使用しないでください。",
+      content: systemPrompts.default,
     };
 
     setMessages([systemPrompt, ...messages]);

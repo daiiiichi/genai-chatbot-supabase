@@ -1,4 +1,5 @@
 import { Message } from "../types/chat";
+import { systemPrompts } from "./prompts";
 import { supabase } from "./supabase/supabase-client";
 
 export default async function generateTitle(
@@ -22,8 +23,7 @@ export default async function generateTitle(
           {
             id: 0,
             role: "system",
-            content:
-              "あなたは検索履歴のタイトル作成に秀でています。以下の会話を参考に会話のタイトルを6語以内で考えてください。タイトルは名詞で終わることを心掛け、返答は必ずタイトルのみで返答すること。",
+            content: systemPrompts.generateTitle,
           },
           assistantAnswerObj,
         ],
