@@ -1,3 +1,4 @@
+import CopyButton from "./copy-button";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkEmoji from "remark-emoji";
@@ -19,22 +20,33 @@ export default function MarkdownDisplay({ content }: MarkdownDisplayProps) {
           code(props) {
             const { children, className } = props;
             const match = /language-(\w+)/.exec(className || "");
+            const codeContent = String(children).trim();
+
             return match ? (
-              <SyntaxHighlighter
-                language={match[1]}
-                style={vs}
-                wrapLongLines={true}
-                codeTagProps={{
-                  style: {
-                    fontSize: "0.75rem",
-                  },
-                }}
-              >
-                {children}
-              </SyntaxHighlighter>
+              <div className="relative bg-white rounded-md overflow-hidden group">
+                <div className="flex justify-between items-center px-[10.8px] pt-2 pb-0 text-xs text-white bg-white">
+                  <span className="uppercase text-gray-500 font-mono text-[10px]">
+                    {match[1]}
+                  </span>
+                  <CopyButton content={codeContent} />
+                </div>
+                <SyntaxHighlighter
+                  language={match[1]}
+                  style={vs}
+                  wrapLongLines={true}
+                  customStyle={{ border: "none" }}
+                  codeTagProps={{
+                    style: {
+                      fontSize: "0.75rem",
+                    },
+                  }}
+                >
+                  {codeContent}
+                </SyntaxHighlighter>
+              </div>
             ) : (
               <code className="!bg-gray-200 rounded !px-1 !font-[Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace] !font-normal">
-                {children}
+                {codeContent}
               </code>
             );
           },
