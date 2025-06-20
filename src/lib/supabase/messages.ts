@@ -1,4 +1,3 @@
-// lib/supabase/messages.ts
 import { Message } from "@/types/chat";
 import { supabase } from "./supabase-client";
 
