@@ -3,9 +3,9 @@ import { AzureOpenAI } from "openai";
 export const runtime = "edge";
 
 const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-const modelName = process.env.AZURE_OPENAI_MODEL_NAME || "4o-mini";
-const deployment = process.env.AZURE_OPENAI_DEPLOYMENT_NAME_4OMINI;
-const apiVersion = process.env.AZURE_OPENAI_API_VERSION_4OMINI;
+const modelName = "gpt-4o-mini";
+const deployment = "gpt-4o-mini";
+const apiVersion = "2024-04-01-preview";
 const apiKey = process.env.AZURE_OPENAI_KEY_4OMINI;
 
 const options = { endpoint, apiKey, deployment, apiVersion };

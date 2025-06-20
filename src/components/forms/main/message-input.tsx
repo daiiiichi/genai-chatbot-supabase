@@ -20,7 +20,7 @@ import generateTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
-import { Brain, CircleCheckBig } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 
 export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
@@ -56,11 +56,25 @@ export default function MessageInput() {
     });
 
     // ストリームで回答を収集
-    const res = await fetch("/api/chat-gemini", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: addUserMessages }),
-    });
+    let res: Response;
+
+    if (llmModel.value.startsWith("gemini")) {
+      res = await fetch("/api/chat-gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: addUserMessages }),
+      });
+    } else {
+      res = await fetch("/api/chat-openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: addUserMessages,
+          modelName: llmModel.value,
+          apiVersion: llmModel.api_version,
+        }),
+      });
+    }
 
     const reader = res.body?.getReader();
     const decoder = new TextDecoder("utf-8");
