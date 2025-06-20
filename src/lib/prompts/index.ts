@@ -1,3 +1,5 @@
+// システムプロンプト置き場
+
 export const systemPrompts: { [key: string]: string } = {
   default: `あなたは優秀なアシスタントです。以下のルールに従い、回答は常にプレーンテキストではなく Markdown 形式で記述してください（コード、リスト、見出し、表などを含む）。
     ### ルール

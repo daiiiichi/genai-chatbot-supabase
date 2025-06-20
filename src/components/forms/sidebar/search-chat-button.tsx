@@ -20,7 +20,7 @@ import {
 import { selectChat } from "@/lib/chat";
 
 export default function SearchChatButton() {
-  const [open, setOpen] = useState(false);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const chatHistories = useAtomValue(chatHistoriesAtom);
   const setMessages = useSetAtom(messagesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
@@ -28,12 +28,13 @@ export default function SearchChatButton() {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
-        <a onClick={() => setOpen(true)}>
+        <a onClick={() => setSearchDialogOpen(true)}>
           <Search />
           <span>Search Chat</span>
         </a>
       </SidebarMenuButton>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+
+      <CommandDialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
@@ -53,7 +54,7 @@ export default function SearchChatButton() {
                       setCurrentChatId,
                       setMessages
                     );
-                    setOpen(false);
+                    setSearchDialogOpen(false);
                   }}
                 >
                   <span>{data.title}</span>

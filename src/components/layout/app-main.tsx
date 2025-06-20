@@ -28,16 +28,14 @@ export default function AppMain() {
       if (!session) return;
       if (initialized) return;
 
-      setInitialized(true); // "New Chat" の二重作成を防ぐ
+      setInitialized(true); // "New Chat" の二重作成を防ぐ目的
       setUserId(session.user.id);
+
+      // ページ立ち上げ時には必ず新規チャットを作成
+      await startNewChat(session.user.id, setMessages, setCurrentChatId);
 
       const chatHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(chatHistories);
-
-      await startNewChat(session.user.id, setMessages, setCurrentChatId);
-
-      const newHistories = await fetchChatHistories(session?.user.id);
-      setChatHistories(newHistories);
     };
     initialize();
   }, [session, initialized]);

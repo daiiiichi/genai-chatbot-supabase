@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "./supabase/supabase-client";
 import { Message } from "../types/chat";
-import type { Session } from "@supabase/supabase-js";
 import { systemPrompts } from "./prompts";
 
 const startNewChat = async (
@@ -13,7 +12,6 @@ const startNewChat = async (
     throw new Error("User session is not available.");
   }
 
-  // すでに "New Chat" があるかチェック
   const { data: NewChat, error } = await supabase
     .from("chat_sessions")
     .select("*")
@@ -25,6 +23,7 @@ const startNewChat = async (
     return;
   }
 
+  // "New Chat"があれば、それを現在の会話にする
   if (NewChat && NewChat.length > 0) {
     setMessages([
       {

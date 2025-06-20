@@ -27,9 +27,11 @@ export default function MessageInput() {
   const setStreamedAnswer = useSetAtom(streamedAnswerAtom);
   const userId = useAtomValue(userIdAtom);
 
+  // メッセージ送信時の処理
   const sendMessage = async () => {
     if (!userInput.trim()) return;
 
+    // ユーザーメッセージの成型とメッセージ送信時の前準備
     const userMessageObj: Message = {
       role: "user",
       content: userInput,
@@ -40,12 +42,14 @@ export default function MessageInput() {
     setIsLoading(true);
     setUserInput("");
 
+    // メッセージの supabase への保存
     await insertMessage({
       chat_session_id: currentChatId,
       role: userMessageObj.role,
       content: userMessageObj.content,
     });
 
+    // ストリームで回答を収集
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -66,6 +70,7 @@ export default function MessageInput() {
       setStreamedAnswer((prev) => prev + chunk);
     }
 
+    // 回答の成型
     const assistantAnswerObj: Message = {
       role: "assistant",
       content: fullreply,
@@ -76,6 +81,7 @@ export default function MessageInput() {
     ];
     setMessages(addAssistantMessages);
 
+    // 回答の supabase への保存
     await insertMessage({
       chat_session_id: currentChatId,
       role: assistantAnswerObj.role,
@@ -85,11 +91,15 @@ export default function MessageInput() {
     setIsLoading(false);
     setStreamedAnswer("");
 
+    // チャットタイトルの作成
+    // [TODO] タイトル作成の際に使用する会話の検討
+    // １回目の返答のみを用いてタイトル作成（2025/6/19）
     await generateTitle(currentChatId, assistantAnswerObj);
     const updatedChathistories = await fetchChatHistories(userId);
     setChatHistories(updatedChathistories);
   };
 
+  // 入力したメッセージを Enter で送れるようにするための処理
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

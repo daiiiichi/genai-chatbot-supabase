@@ -41,6 +41,7 @@ export default function AppSidebar() {
     showSidebar && (
       <Sidebar>
         <SidebarContent className="flex flex-col h-screen">
+          {/* チャット管理機能（新規作成、検索、削除） */}
           <SidebarGroup>
             <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -52,6 +53,7 @@ export default function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
+          {/* チャット履歴 */}
           <SidebarGroup className="flex-1 overflow-hidden">
             <SidebarGroupLabel>chat</SidebarGroupLabel>
             <SidebarGroupContent className="h-full">

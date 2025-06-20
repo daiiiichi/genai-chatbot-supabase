@@ -13,6 +13,8 @@ export default function ChatBubble() {
   const streamedAnswer = useAtomValue(streamedAnswerAtom);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // 会話が増えたときの自動スクロール設定
+  // メッセージが追加されたときにチャット画面が自動的に一番下にスクロールされる仕組み
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -62,6 +64,8 @@ export default function ChatBubble() {
             </div>
           </div>
         ))}
+
+      {/* 回答生成前　および　ストリーム　で返答される回答を表示する場合 */}
       {isLoading && (
         <div className="flex gap-3 justify-start">
           <div className="max-w-[95%] justify-end">

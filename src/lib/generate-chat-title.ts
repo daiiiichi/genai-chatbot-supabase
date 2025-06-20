@@ -6,13 +6,13 @@ export default async function generateTitle(
   currentChatId: string,
   assistantAnswerObj: Message
 ) {
-  // 現在のchat_sessionのタイトルを取得
+  // 現在の　chat_session　のタイトルを取得
   const { data } = await supabase
     .from("chat_sessions")
     .select("title")
     .eq("chat_session_id", currentChatId);
 
-  // タイトルが初期値の"New Chat"の場合は、タイトル作成
+  // タイトルが初期値の　"New Chat"　の場合は、タイトル作成
   let chatTitle = data && data.length > 0 ? data[0].title : null;
   if (chatTitle === "New Chat") {
     const titleRes = await fetch("/api/generate-title", {
