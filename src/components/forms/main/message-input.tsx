@@ -9,14 +9,18 @@ import {
   chatHistoriesAtom,
   currentChatIdAtom,
   isLoadingAtom,
+  llmModelAtom,
   messagesAtom,
   streamedAnswerAtom,
   userIdAtom,
+  llmComboboxOpenAtom,
 } from "@/atoms/chat";
 import { insertMessage } from "@/lib/supabase/messages";
 import generateTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import { Message } from "@/types/chat";
+import { Badge } from "@/components/ui/badge";
+import { Brain, CircleCheckBig } from "lucide-react";
 
 export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
@@ -26,6 +30,8 @@ export default function MessageInput() {
   const setIsLoading = useSetAtom(isLoadingAtom);
   const setStreamedAnswer = useSetAtom(streamedAnswerAtom);
   const userId = useAtomValue(userIdAtom);
+  const llmModel = useAtomValue(llmModelAtom);
+  const setLlmComboboxOpen = useSetAtom(llmComboboxOpenAtom);
 
   // メッセージ送信時の処理
   const sendMessage = async () => {
@@ -118,7 +124,17 @@ export default function MessageInput() {
       />
       <div className="flex items-center justify-between gap-2 pt-2">
         <FileUploadButton />
-        <SubmitButton userInput={userInput} onSend={sendMessage} />
+        <div className="flex gap-4">
+          <Badge
+            variant={"outline"}
+            onClick={() => setLlmComboboxOpen(true)}
+            style={{ cursor: "pointer" }}
+          >
+            <CircleCheckBig />
+            {llmModel.value}
+          </Badge>
+          <SubmitButton userInput={userInput} onSend={sendMessage} />
+        </div>
       </div>
     </div>
   );

@@ -18,21 +18,43 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAtom } from "jotai";
+import { llmModelAtom, llmComboboxOpenAtom } from "@/atoms/chat";
 
-const frameworks = [
+const modelList = [
   {
     value: "o3-mini",
-    label: "o3-mini",
+    label: "gpt-o3-mini",
+    api_version: "2024-12-01-preview",
+    logo: "/icons/openai-logo.svg",
   },
   {
-    value: "claude",
-    label: "claude",
+    value: "gpt-4o-mini",
+    label: "gpt-4o-mini",
+    api_version: "2024-04-01-preview",
+    logo: "/icons/openai-logo.svg",
+  },
+  {
+    value: "gpt-4.1-mini",
+    label: "gpt-4.1-mini",
+    api_version: "2024-12-01-preview",
+    logo: "/icons/openai-logo.svg",
+  },
+  {
+    value: "gemini-2.0-flash-lite",
+    label: "gemini-2.0-flash-lite",
+    api_version: "",
+    logo: "/icons/gemini-logo.svg",
   },
 ];
 
 export function LLMSelectCombobox() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = useAtom(llmComboboxOpenAtom);
+  const [llmModel, SetLlmModel] = useAtom(llmModelAtom);
+
+  const selectedModel = modelList.find(
+    (model) => model.value === llmModel.value
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,36 +63,47 @@ export function LLMSelectCombobox() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[216px] justify-between"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select LLM model..."}
+          {selectedModel ? (
+            <div className="flex items-center">
+              <img src={selectedModel.logo} alt="" className="mr-3 h-4 w-4" />
+              {selectedModel.label}
+            </div>
+          ) : (
+            "Select LLM model..."
+          )}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[216px] p-0">
         <Command>
           <CommandInput placeholder="Search LLM model..." />
           <CommandList>
             <CommandEmpty>No LLM model found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {modelList.map((model) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  key={model.value}
+                  value={model.value}
+                  onSelect={() => {
+                    SetLlmModel({
+                      value: model.value,
+                      api_version: model.api_version,
+                    });
                     setOpen(false);
                   }}
                 >
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      llmModel.value === model.value
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
-                  {framework.label}
+                  <img src={model.logo} alt="" className="mr-1 h-4 w-4" />
+                  {model.label}
                 </CommandItem>
               ))}
             </CommandGroup>
