@@ -51,7 +51,11 @@ export default function DeleteAllChatsButton() {
                   className="ml-auto"
                   onClick={async () => {
                     await deleteAllChats(userId);
-                    await startNewChat(userId, setMessages, setCurrentChatId);
+                    const newChat = await startNewChat(userId);
+                    if (newChat) {
+                      setMessages(newChat.messages);
+                      setCurrentChatId(newChat.chatSessionId);
+                    }
                   }}
                 >
                   Delete

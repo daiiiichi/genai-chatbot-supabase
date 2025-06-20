@@ -14,7 +14,11 @@ export default function NewChatButton() {
       <SidebarMenuButton asChild>
         <a
           onClick={async () => {
-            await startNewChat(userId, setMessages, setCurrentChatId);
+            const newChat = await startNewChat(userId);
+            if (newChat) {
+              setMessages(newChat.messages);
+              setCurrentChatId(newChat.chatSessionId);
+            }
           }}
         >
           <FilePlus2 />

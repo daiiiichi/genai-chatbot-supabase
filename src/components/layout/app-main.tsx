@@ -32,7 +32,11 @@ export default function AppMain() {
       setUserId(session.user.id);
 
       // ページ立ち上げ時には必ず新規チャットを作成
-      await startNewChat(session.user.id, setMessages, setCurrentChatId);
+      const newChat = await startNewChat(session.user.id);
+      if (newChat) {
+        setMessages(newChat.messages);
+        setCurrentChatId(newChat.chatSessionId);
+      }
 
       const chatHistories = await fetchChatHistories(session?.user.id);
       setChatHistories(chatHistories);

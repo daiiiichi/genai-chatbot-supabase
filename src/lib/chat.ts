@@ -4,10 +4,14 @@ import { Message } from "../types/chat";
 import { systemPrompts } from "./prompts";
 
 const startNewChat = async (
-  userId: string,
-  setMessages: (messages: Message[]) => void,
-  setCurrentChatId: (chatId: string) => void
-) => {
+  userId: string
+): Promise<
+  | {
+      messages: Message[];
+      chatSessionId: string;
+    }
+  | undefined
+> => {
   if (!userId) {
     throw new Error("User session is not available.");
   }
@@ -23,16 +27,16 @@ const startNewChat = async (
     return;
   }
 
+  const messages: Message[] = [
+    {
+      role: "system",
+      content: systemPrompts.default,
+    },
+  ];
+
   // "New Chat"があれば、それを現在の会話にする
   if (NewChat && NewChat.length > 0) {
-    setMessages([
-      {
-        role: "system",
-        content: systemPrompts.default,
-      },
-    ]);
-    setCurrentChatId(NewChat[0].chat_session_id);
-    return;
+    return { messages, chatSessionId: NewChat[0].chat_session_id };
   }
 
   // なければ新規作成
@@ -49,28 +53,27 @@ const startNewChat = async (
     },
   ]);
 
-  setMessages([
-    {
-      role: "system",
-      content: systemPrompts.default,
-    },
-  ]);
-  setCurrentChatId(chatSessionId);
+  return { messages, chatSessionId };
 };
 
 const selectChat = async (
-  selectedChatId: string,
-  setCurrentChatId: (chatId: string) => void,
-  setMessages: (messages: Message[]) => void
-) => {
-  setCurrentChatId(selectedChatId);
+  selectedChatId: string
+): Promise<{ messages: Message[] }> => {
   const { data } = await supabase
     .from("messages")
     .select()
     .eq("chat_session_id", selectedChatId);
 
-  if (data) {
-    const messages: Message[] = data
+  if (!data) {
+    return { messages: [] };
+  }
+
+  const messages: Message[] = [
+    {
+      role: "system",
+      content: systemPrompts.default,
+    },
+    ...data
       .sort(
         (a, b) =>
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -78,15 +81,10 @@ const selectChat = async (
       .map((m) => ({
         role: m.role as "user" | "assistant" | "system",
         content: m.content as string,
-      }));
+      })),
+  ];
 
-    const systemPrompt: Message = {
-      role: "system",
-      content: systemPrompts.default,
-    };
-
-    setMessages([systemPrompt, ...messages]);
-  }
+  return { messages };
 };
 
 const deleteChat = async (selectedChatId: string) => {

@@ -1,5 +1,5 @@
 import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
-import { selectChat } from "@/lib/chat";
+import { selectChat } from "../../../lib/chat";
 import { cn, toJST } from "@/lib/utils";
 import { useSetAtom, useAtomValue, useAtom } from "jotai";
 import {
@@ -30,13 +30,13 @@ export default function ChatHistoryList() {
                   currentChatId === data.chat_session_id &&
                     "bg-gray-100 dark:bg-neutral-800"
                 )}
-                onClick={() =>
-                  selectChat(
-                    data.chat_session_id,
-                    setCurrentChatId,
-                    setMessages
-                  )
-                }
+                onClick={async () => {
+                  setCurrentChatId(data.chat_session_id);
+                  const selectedChat = await selectChat(data.chat_session_id);
+                  if (selectedChat) {
+                    setMessages(selectedChat.messages);
+                  }
+                }}
               >
                 <a className="grid !p-1 !gap-1">
                   <span className="text-xs">{toJST(data.updated_at)}</span>

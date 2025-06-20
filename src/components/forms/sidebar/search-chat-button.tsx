@@ -48,12 +48,12 @@ export default function SearchChatButton() {
               .map((data) => (
                 <CommandItem
                   key={data.chat_session_id}
-                  onSelect={() => {
-                    selectChat(
-                      data.chat_session_id,
-                      setCurrentChatId,
-                      setMessages
-                    );
+                  onSelect={async () => {
+                    setCurrentChatId(data.chat_session_id);
+                    const selectedChat = await selectChat(data.chat_session_id);
+                    if (selectedChat) {
+                      setMessages(selectedChat.messages);
+                    }
                     setSearchDialogOpen(false);
                   }}
                 >
