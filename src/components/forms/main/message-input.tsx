@@ -50,7 +50,7 @@ export default function MessageInput() {
     });
 
     // ストリームで回答を収集
-    const res = await fetch("/api/chat", {
+    const res = await fetch("/api/chat-gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: addUserMessages }),
