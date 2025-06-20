@@ -2,9 +2,9 @@ import CopyButton from "./copy-button";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkEmoji from "remark-emoji";
-// @ts-ignore
+// @ts-expect-error: react-syntax-highlighter does not have types
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// @ts-ignore
+// @ts-expect-error: react-syntax-highlighter does not have types
 import { vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type MarkdownDisplayProps = {

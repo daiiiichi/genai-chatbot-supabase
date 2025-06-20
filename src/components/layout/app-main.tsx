@@ -42,7 +42,14 @@ export default function AppMain() {
       setChatHistories(chatHistories);
     };
     initialize();
-  }, [session, initialized]);
+  }, [
+    session,
+    initialized,
+    setUserId,
+    setMessages,
+    setCurrentChatId,
+    setChatHistories,
+  ]);
 
   return (
     <div className="p-4">

@@ -35,7 +35,7 @@ export default function AppSidebar() {
     if (userId) {
       fetchHistories(userId);
     }
-  }, [currentChatId, userId]);
+  }, [currentChatId, userId, setChatHistories]);
 
   return (
     showSidebar && (
