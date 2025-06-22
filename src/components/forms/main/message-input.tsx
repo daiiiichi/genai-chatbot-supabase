@@ -41,6 +41,7 @@ export default function MessageInput() {
     const userMessageObj: Message = {
       role: "user",
       content: userInput,
+      llm_model: null,
     };
     const addUserMessages: Message[] = [...messages, userMessageObj];
     setMessages(addUserMessages);
@@ -53,7 +54,14 @@ export default function MessageInput() {
       chat_session_id: currentChatId,
       role: userMessageObj.role,
       content: userMessageObj.content,
+      llm_model: userMessageObj.llm_model,
     });
+
+    // llm_modelは回答を得るのに必要ないので、削除
+    const apiMessages = addUserMessages.map(({ role, content }) => ({
+      role,
+      content,
+    }));
 
     // ストリームで回答を収集
     let res: Response;
@@ -62,14 +70,14 @@ export default function MessageInput() {
       res = await fetch("/api/chat-gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: addUserMessages }),
+        body: JSON.stringify({ messages: apiMessages }),
       });
     } else {
       res = await fetch("/api/chat-openai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: addUserMessages,
+          messages: apiMessages,
           modelName: llmModel.value,
           apiVersion: llmModel.api_version,
         }),
@@ -94,6 +102,7 @@ export default function MessageInput() {
     const assistantAnswerObj: Message = {
       role: "assistant",
       content: fullreply,
+      llm_model: llmModel.value,
     };
     const addAssistantMessages: Message[] = [
       ...addUserMessages,
@@ -106,6 +115,7 @@ export default function MessageInput() {
       chat_session_id: currentChatId,
       role: assistantAnswerObj.role,
       content: assistantAnswerObj.content,
+      llm_model: llmModel.value,
     });
 
     setIsLoading(false);

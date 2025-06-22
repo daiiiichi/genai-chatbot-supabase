@@ -6,6 +6,8 @@ import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms/chat";
 import { TypingIndicator } from "../../ui/typing-indicator";
 import { cn } from "../../../lib/utils";
 import MarkdownDisplay from "../../ui/markdown-display";
+import { Badge } from "@/components/ui/badge";
+import { MessageSquare } from "lucide-react";
 
 export default function ChatBubble() {
   const messages = useAtomValue(messagesAtom);
@@ -47,6 +49,12 @@ export default function ChatBubble() {
                   : "mr-auto max-w-[95%]"
               )}
             >
+              {msg.role === "assistant" && (
+                <Badge className="mb-1" variant={"outline"}>
+                  <MessageSquare />
+                  {msg.llm_model}
+                </Badge>
+              )}
               <div
                 className={cn(
                   "break-words whitespace-pre-wrap rounded-lg px-3 py-2",

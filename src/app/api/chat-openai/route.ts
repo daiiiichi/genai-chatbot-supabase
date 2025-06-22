@@ -1,3 +1,4 @@
+import { systemPrompts } from "@/lib/prompts";
 import { NextResponse } from "next/server";
 import { AzureOpenAI } from "openai";
 
@@ -8,14 +9,20 @@ const apiKey = process.env.AZURE_OPENAI_KEY;
 
 export async function POST(req: Request) {
   const { messages, modelName, apiVersion } = await req.json();
-  console.log(messages);
+
+  const messagesWithSystem = [
+    { role: "system", content: systemPrompts.default },
+    ...messages,
+  ];
+
+  console.log(messagesWithSystem);
 
   const options = { endpoint, apiKey, modelName, apiVersion };
   const client = new AzureOpenAI(options);
 
   const stream = await client.chat.completions.create({
     model: modelName,
-    messages,
+    messages: messagesWithSystem,
     stream: true,
     max_completion_tokens: modelName === "gpt-4o-mini" ? 4096 : 10000,
   });

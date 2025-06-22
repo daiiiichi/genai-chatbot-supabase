@@ -27,12 +27,7 @@ const startNewChat = async (
     return;
   }
 
-  const messages: Message[] = [
-    {
-      role: "system",
-      content: systemPrompts.default,
-    },
-  ];
+  const messages: Message[] = [];
 
   // "New Chat"があれば、それを現在の会話にする
   if (NewChat && NewChat.length > 0) {
@@ -69,10 +64,6 @@ const selectChat = async (
   }
 
   const messages: Message[] = [
-    {
-      role: "system",
-      content: systemPrompts.default,
-    },
     ...data
       .sort(
         (a, b) =>
@@ -81,6 +72,7 @@ const selectChat = async (
       .map((m) => ({
         role: m.role as "user" | "assistant" | "system",
         content: m.content as string,
+        llm_model: m.llm_model as string | null,
       })),
   ];
 
