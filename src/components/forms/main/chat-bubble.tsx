@@ -49,6 +49,7 @@ export default function ChatBubble() {
                   : "mr-auto max-w-[95%]"
               )}
             >
+              {/* アシスタントのメッセージにLLMモデルの種類の表示 */}
               {msg.role === "assistant" && (
                 <Badge className="mb-1" variant={"outline"}>
                   <MessageSquare />
@@ -63,10 +64,11 @@ export default function ChatBubble() {
                     : "bg-muted text-foreground border"
                 )}
               >
-                {msg.role === "user" ? (
-                  msg.content
-                ) : (
+                {/* アシスタントのメッセージのみマークダウン表示 */}
+                {msg.role === "assistant" ? (
                   <MarkdownDisplay content={msg.content} />
+                ) : (
+                  msg.content
                 )}
               </div>
             </div>

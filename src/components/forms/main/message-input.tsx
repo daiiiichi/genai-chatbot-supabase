@@ -57,7 +57,7 @@ export default function MessageInput() {
       llm_model: userMessageObj.llm_model,
     });
 
-    // llm_modelは回答を得るのに必要ないので、削除
+    // llm_modelはAPI送信には必要ないので、削除
     const apiMessages = addUserMessages.map(({ role, content }) => ({
       role,
       content,
