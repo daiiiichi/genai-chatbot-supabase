@@ -1,4 +1,15 @@
 import { Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
 import { startNewChat, deleteChat } from "@/lib/chat";
 import { useSetAtom, useAtomValue } from "jotai";
 import {
@@ -35,14 +46,39 @@ export default function DeleteChatButton({
 
   return (
     <>
-      <button
-        type="button"
-        title="Delete chat"
-        className="text-gray-300 hover:text-destructive ml-auto mr-1"
-        onClick={handleDeleteChat}
-      >
-        {chat_title !== "New Chat" && <Trash2 size={16} />}
-      </button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <a className="text-gray-300 hover:text-destructive ml-auto mr-1">
+            {chat_title !== "New Chat" && <Trash2 size={16} />}
+          </a>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion: "{chat_title}"</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this message as well as all chats?
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Close
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className="ml-auto"
+                onClick={handleDeleteChat}
+              >
+                Delete
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
