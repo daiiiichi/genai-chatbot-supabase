@@ -73,7 +73,7 @@ export default function ChatBubble() {
           </div>
         ))}
 
-      {/* 回答生成前　および　ストリーム　で返答される回答を表示する場合 */}
+      {/* 回答生成前のインジケーター　および　ストリームで返答される回答を表示する場合 */}
       {isLoading && (
         <div className="flex gap-3 justify-start">
           <div className="max-w-[95%] justify-end">

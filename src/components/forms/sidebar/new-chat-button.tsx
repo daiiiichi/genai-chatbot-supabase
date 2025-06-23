@@ -15,19 +15,19 @@ export default function NewChatButton() {
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
 
+  const handleNewChat = async () => {
+    const newChat = await startNewChat(userId);
+    if (newChat) {
+      setMessages(newChat.messages);
+      setCurrentChatId(newChat.chatSessionId);
+      SetLlmModel("o3-mini"); // LLMモデルの初期値
+    }
+  };
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
-        <a
-          onClick={async () => {
-            const newChat = await startNewChat(userId);
-            if (newChat) {
-              setMessages(newChat.messages);
-              setCurrentChatId(newChat.chatSessionId);
-              SetLlmModel("o3-mini"); // LLMモデルの初期値
-            }
-          }}
-        >
+        <a onClick={handleNewChat}>
           <FilePlus2 />
           <span>New Chat</span>
         </a>

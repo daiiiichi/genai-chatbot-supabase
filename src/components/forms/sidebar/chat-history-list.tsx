@@ -16,6 +16,15 @@ export default function ChatHistoryList() {
   const chatHistories = useAtomValue(chatHistoriesAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
 
+  const handleSelectChat = async (chatId: string) => {
+    setCurrentChatId(chatId);
+    const selectedChat = await selectChat(chatId);
+    if (selectedChat) {
+      setMessages(selectedChat.messages);
+      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
+    }
+  };
+
   return (
     <>
       {chatHistories
@@ -32,14 +41,7 @@ export default function ChatHistoryList() {
                   currentChatId === data.chat_session_id &&
                     "bg-gray-100 dark:bg-neutral-800"
                 )}
-                onClick={async () => {
-                  setCurrentChatId(data.chat_session_id);
-                  const selectedChat = await selectChat(data.chat_session_id);
-                  if (selectedChat) {
-                    setMessages(selectedChat.messages);
-                    SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
-                  }
-                }}
+                onClick={() => handleSelectChat(data.chat_session_id)}
               >
                 <a className="grid !p-1 !gap-1">
                   <span className="text-xs">{toJST(data.updated_at)}</span>

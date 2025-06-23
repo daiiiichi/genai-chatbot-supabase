@@ -22,21 +22,23 @@ export default function DeleteChatButton({
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
 
+  const handleDeleteChat = async () => {
+    await deleteChat(chat_session_id);
+    const newChat = await startNewChat(userId);
+    if (newChat) {
+      setMessages(newChat.messages);
+      setCurrentChatId(newChat.chatSessionId);
+      SetLlmModel("o3-mini"); // LLMモデルの初期値
+    }
+  };
+
   return (
     <>
       <button
         type="button"
         title="Delete chat"
         className="text-gray-300 hover:text-destructive ml-auto mr-1"
-        onClick={async () => {
-          await deleteChat(chat_session_id);
-          const newChat = await startNewChat(userId);
-          if (newChat) {
-            setMessages(newChat.messages);
-            setCurrentChatId(newChat.chatSessionId);
-            SetLlmModel("o3-mini"); // LLMモデルの初期値
-          }
-        }}
+        onClick={handleDeleteChat}
       >
         {chat_title !== "New Chat" && <Trash2 size={16} />}
       </button>

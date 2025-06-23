@@ -27,6 +27,16 @@ export default function SearchChatButton() {
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
 
+  const handleSelectChat = async (chatId: string) => {
+    setCurrentChatId(chatId);
+    const selectedChat = await selectChat(chatId);
+    if (selectedChat) {
+      setMessages(selectedChat.messages);
+      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
+    }
+    setSearchDialogOpen(false);
+  };
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
@@ -51,13 +61,7 @@ export default function SearchChatButton() {
                 <CommandItem
                   key={data.chat_session_id}
                   onSelect={async () => {
-                    setCurrentChatId(data.chat_session_id);
-                    const selectedChat = await selectChat(data.chat_session_id);
-                    if (selectedChat) {
-                      setMessages(selectedChat.messages);
-                      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
-                    }
-                    setSearchDialogOpen(false);
+                    handleSelectChat(data.chat_session_id);
                   }}
                 >
                   <span>{data.title}</span>

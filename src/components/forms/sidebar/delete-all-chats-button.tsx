@@ -26,6 +26,16 @@ export default function DeleteAllChatsButton() {
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
 
+  const handleDeleteAllChats = async () => {
+    await deleteAllChats(userId);
+    const newChat = await startNewChat(userId);
+    if (newChat) {
+      setMessages(newChat.messages);
+      setCurrentChatId(newChat.chatSessionId);
+      SetLlmModel("o3-mini"); //初期値のLLMモデル
+    }
+  };
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
@@ -55,15 +65,7 @@ export default function DeleteAllChatsButton() {
                   type="button"
                   variant="destructive"
                   className="ml-auto"
-                  onClick={async () => {
-                    await deleteAllChats(userId);
-                    const newChat = await startNewChat(userId);
-                    if (newChat) {
-                      setMessages(newChat.messages);
-                      setCurrentChatId(newChat.chatSessionId);
-                      SetLlmModel("o3-mini"); //初期値のLLMモデル
-                    }
-                  }}
+                  onClick={handleDeleteAllChats}
                 >
                   Delete
                 </Button>
