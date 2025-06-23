@@ -8,12 +8,22 @@ const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
 const apiKey = process.env.AZURE_OPENAI_KEY;
 
 export async function POST(req: Request) {
-  const { messages, modelName, apiVersion } = await req.json();
+  const { messages, modelName } = await req.json();
 
   const messagesWithSystem = [
     { role: "system", content: systemPrompts.default },
     ...messages,
   ];
+
+  let apiVersion = "";
+
+  if (modelName === "O3-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_O3_MINI!;
+  } else if (modelName === "gpt-4o-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_4O_MINI!;
+  } else if (modelName === "gpt-4.1-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_41_MINI!;
+  }
 
   console.log(messagesWithSystem);
 

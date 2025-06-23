@@ -66,7 +66,7 @@ export default function MessageInput() {
     // ストリームで回答を収集
     let res: Response;
 
-    if (llmModel.value.startsWith("gemini")) {
+    if (llmModel.startsWith("gemini")) {
       res = await fetch("/api/chat-gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,8 +78,7 @@ export default function MessageInput() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: apiMessages,
-          modelName: llmModel.value,
-          apiVersion: llmModel.api_version,
+          modelName: llmModel,
         }),
       });
     }
@@ -102,7 +101,7 @@ export default function MessageInput() {
     const assistantAnswerObj: Message = {
       role: "assistant",
       content: fullreply,
-      llm_model: llmModel.value,
+      llm_model: llmModel,
     };
     const addAssistantMessages: Message[] = [
       ...addUserMessages,
@@ -115,7 +114,7 @@ export default function MessageInput() {
       chat_session_id: currentChatId,
       role: assistantAnswerObj.role,
       content: assistantAnswerObj.content,
-      llm_model: llmModel.value,
+      llm_model: llmModel,
     });
 
     setIsLoading(false);
@@ -155,7 +154,7 @@ export default function MessageInput() {
             style={{ cursor: "pointer" }}
           >
             <CircleCheckBig />
-            {llmModel.value}
+            {llmModel}
           </Badge>
           <SubmitButton userInput={userInput} onSend={sendMessage} />
         </div>

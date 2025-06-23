@@ -10,10 +10,7 @@ const chatHistoriesAtom = atom<
 const isLoadingAtom = atom<boolean>(false);
 const streamedAnswerAtom = atom<string>("");
 const userIdAtom = atom<string>("");
-const llmModelAtom = atom<{ value: string; api_version: string }>({
-  value: "o3-mini",
-  api_version: "2024-12-01-preview",
-});
+const llmModelAtom = atom<string>("o3-mini");
 const llmComboboxOpenAtom = atom<boolean>(false);
 
 export {
