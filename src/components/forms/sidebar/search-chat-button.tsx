@@ -19,6 +19,7 @@ import {
   messagesAtom,
 } from "@/atoms";
 import { selectChat } from "@/lib/chat";
+import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 export default function SearchChatButton() {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function SearchChatButton() {
     const selectedChat = await selectChat(chatId);
     if (selectedChat) {
       setMessages(selectedChat.messages);
-      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
+      SetLlmModel(selectedChat.latestLlmModel ?? DEFAULT_LLM_MODEL);
     }
     setSearchDialogOpen(false);
   };

@@ -9,6 +9,7 @@ import {
   messagesAtom,
 } from "@/atoms";
 import DeleteChatButton from "./delete-chat-button";
+import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 export default function ChatHistoryList() {
   const setMessages = useSetAtom(messagesAtom);
@@ -21,7 +22,7 @@ export default function ChatHistoryList() {
     const selectedChat = await selectChat(chatId);
     if (selectedChat) {
       setMessages(selectedChat.messages);
-      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
+      SetLlmModel(selectedChat.latestLlmModel ?? DEFAULT_LLM_MODEL);
     }
   };
 

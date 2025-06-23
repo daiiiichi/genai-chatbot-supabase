@@ -7,6 +7,7 @@ import {
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
+import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 type DeleteChatButtonProps = {
   chat_session_id: string;
@@ -28,7 +29,7 @@ export default function DeleteChatButton({
     if (newChat) {
       setMessages(newChat.messages);
       setCurrentChatId(newChat.chatSessionId);
-      SetLlmModel("o3-mini"); // LLMモデルの初期値
+      SetLlmModel(DEFAULT_LLM_MODEL);
     }
   };
 

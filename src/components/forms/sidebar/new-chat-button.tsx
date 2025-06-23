@@ -8,6 +8,7 @@ import {
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
+import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 export default function NewChatButton() {
   const userId = useAtomValue(userIdAtom);
@@ -20,7 +21,7 @@ export default function NewChatButton() {
     if (newChat) {
       setMessages(newChat.messages);
       setCurrentChatId(newChat.chatSessionId);
-      SetLlmModel("o3-mini"); // LLMモデルの初期値
+      SetLlmModel(DEFAULT_LLM_MODEL);
     }
   };
 
