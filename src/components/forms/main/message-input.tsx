@@ -63,69 +63,81 @@ export default function MessageInput() {
       content,
     }));
 
-    // ストリームで回答を収集
-    let res: Response;
+    try {
+      // ストリームで回答を収集
+      let res: Response;
 
-    if (llmModel.startsWith("gemini")) {
-      res = await fetch("/api/chat-gemini", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: apiMessages }),
+      if (llmModel.startsWith("gemini")) {
+        res = await fetch("/api/chat-gemini", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: apiMessages }),
+        });
+      } else {
+        res = await fetch("/api/chat-openai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: apiMessages,
+            modelName: llmModel,
+          }),
+        });
+      }
+
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(errorData || "サーバーエラーが発生しました。");
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      if (!reader) return;
+
+      let fullreply = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        fullreply += chunk;
+        setStreamedAnswer((prev) => prev + chunk);
+      }
+
+      // 回答の成型
+      const assistantAnswerObj: Message = {
+        role: "assistant",
+        content: fullreply,
+        llm_model: llmModel,
+      };
+      const addAssistantMessages: Message[] = [
+        ...addUserMessages,
+        assistantAnswerObj,
+      ];
+      setMessages(addAssistantMessages);
+      setStreamedAnswer("");
+
+      // 回答の supabase への保存
+      await insertMessage({
+        chat_session_id: currentChatId,
+        role: assistantAnswerObj.role,
+        content: assistantAnswerObj.content,
+        llm_model: llmModel,
       });
-    } else {
-      res = await fetch("/api/chat-openai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: apiMessages,
-          modelName: llmModel,
-        }),
-      });
+
+      setIsLoading(false);
+
+      // チャットタイトルの作成
+      // [TODO] タイトル作成の際に使用する会話の検討
+      // １回目の返答のみを用いてタイトル作成（2025/6/19）
+      await generateTitle(currentChatId, assistantAnswerObj);
+      const updatedChathistories = await fetchChatHistories(userId);
+      setChatHistories(updatedChathistories);
+    } catch (error: any) {
+      console.error("チャット送信中にエラー:", error);
+      alert(
+        "メッセージの送信中にエラーが発生しました。\n再読み込みをしてから再度実行をお願いします。"
+      );
     }
-
-    const reader = res.body?.getReader();
-    const decoder = new TextDecoder("utf-8");
-    if (!reader) return;
-
-    let fullreply = "";
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value);
-      fullreply += chunk;
-      setStreamedAnswer((prev) => prev + chunk);
-    }
-
-    // 回答の成型
-    const assistantAnswerObj: Message = {
-      role: "assistant",
-      content: fullreply,
-      llm_model: llmModel,
-    };
-    const addAssistantMessages: Message[] = [
-      ...addUserMessages,
-      assistantAnswerObj,
-    ];
-    setMessages(addAssistantMessages);
-
-    // 回答の supabase への保存
-    await insertMessage({
-      chat_session_id: currentChatId,
-      role: assistantAnswerObj.role,
-      content: assistantAnswerObj.content,
-      llm_model: llmModel,
-    });
-
-    setIsLoading(false);
-    setStreamedAnswer("");
-
-    // チャットタイトルの作成
-    // [TODO] タイトル作成の際に使用する会話の検討
-    // １回目の返答のみを用いてタイトル作成（2025/6/19）
-    await generateTitle(currentChatId, assistantAnswerObj);
-    const updatedChathistories = await fetchChatHistories(userId);
-    setChatHistories(updatedChathistories);
   };
 
   // 入力したメッセージを Enter で送れるようにするための処理
