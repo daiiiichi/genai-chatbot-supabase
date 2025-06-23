@@ -9,14 +9,18 @@ import {
   chatHistoriesAtom,
   currentChatIdAtom,
   isLoadingAtom,
+  llmModelAtom,
   messagesAtom,
   streamedAnswerAtom,
   userIdAtom,
+  llmComboboxOpenAtom,
 } from "@/atoms/chat";
 import { insertMessage } from "@/lib/supabase/messages";
 import generateTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import { Message } from "@/types/chat";
+import { Badge } from "@/components/ui/badge";
+import { CircleCheckBig } from "lucide-react";
 
 export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
@@ -26,6 +30,8 @@ export default function MessageInput() {
   const setIsLoading = useSetAtom(isLoadingAtom);
   const setStreamedAnswer = useSetAtom(streamedAnswerAtom);
   const userId = useAtomValue(userIdAtom);
+  const llmModel = useAtomValue(llmModelAtom);
+  const setLlmComboboxOpen = useSetAtom(llmComboboxOpenAtom);
 
   // メッセージ送信時の処理
   const sendMessage = async () => {
@@ -35,6 +41,7 @@ export default function MessageInput() {
     const userMessageObj: Message = {
       role: "user",
       content: userInput,
+      llm_model: null,
     };
     const addUserMessages: Message[] = [...messages, userMessageObj];
     setMessages(addUserMessages);
@@ -47,14 +54,34 @@ export default function MessageInput() {
       chat_session_id: currentChatId,
       role: userMessageObj.role,
       content: userMessageObj.content,
+      llm_model: userMessageObj.llm_model,
     });
 
+    // llm_modelは回答を得るのに必要ないので、削除
+    const apiMessages = addUserMessages.map(({ role, content }) => ({
+      role,
+      content,
+    }));
+
     // ストリームで回答を収集
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: addUserMessages }),
-    });
+    let res: Response;
+
+    if (llmModel.startsWith("gemini")) {
+      res = await fetch("/api/chat-gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+    } else {
+      res = await fetch("/api/chat-openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: apiMessages,
+          modelName: llmModel,
+        }),
+      });
+    }
 
     const reader = res.body?.getReader();
     const decoder = new TextDecoder("utf-8");
@@ -74,6 +101,7 @@ export default function MessageInput() {
     const assistantAnswerObj: Message = {
       role: "assistant",
       content: fullreply,
+      llm_model: llmModel,
     };
     const addAssistantMessages: Message[] = [
       ...addUserMessages,
@@ -86,6 +114,7 @@ export default function MessageInput() {
       chat_session_id: currentChatId,
       role: assistantAnswerObj.role,
       content: assistantAnswerObj.content,
+      llm_model: llmModel,
     });
 
     setIsLoading(false);
@@ -118,7 +147,17 @@ export default function MessageInput() {
       />
       <div className="flex items-center justify-between gap-2 pt-2">
         <FileUploadButton />
-        <SubmitButton userInput={userInput} onSend={sendMessage} />
+        <div className="flex gap-4">
+          <Badge
+            variant={"outline"}
+            onClick={() => setLlmComboboxOpen(true)}
+            style={{ cursor: "pointer" }}
+          >
+            <CircleCheckBig />
+            {llmModel}
+          </Badge>
+          <SubmitButton userInput={userInput} onSend={sendMessage} />
+        </div>
       </div>
     </div>
   );

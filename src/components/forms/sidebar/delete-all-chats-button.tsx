@@ -13,12 +13,18 @@ import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
 import { Trash2 } from "lucide-react";
 import { startNewChat, deleteAllChats } from "@/lib/chat";
 import { useSetAtom, useAtomValue } from "jotai";
-import { currentChatIdAtom, messagesAtom, userIdAtom } from "@/atoms/chat";
+import {
+  currentChatIdAtom,
+  llmModelAtom,
+  messagesAtom,
+  userIdAtom,
+} from "@/atoms/chat";
 
 export default function DeleteAllChatsButton() {
   const userId = useAtomValue(userIdAtom);
   const setMessages = useSetAtom(messagesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
+  const SetLlmModel = useSetAtom(llmModelAtom);
 
   return (
     <SidebarMenuItem>
@@ -55,6 +61,7 @@ export default function DeleteAllChatsButton() {
                     if (newChat) {
                       setMessages(newChat.messages);
                       setCurrentChatId(newChat.chatSessionId);
+                      SetLlmModel("o3-mini"); //初期値のLLMモデル
                     }
                   }}
                 >

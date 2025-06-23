@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^1.5.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
@@ -35,6 +36,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "remark-emoji": "^5.0.1",
     "remark-gfm": "^4.0.1",
+    "supabase": "^2.26.9",
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0"
   },

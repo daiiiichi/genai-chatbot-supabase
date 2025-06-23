@@ -18,21 +18,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const frameworks = [
-  {
-    value: "o3-mini",
-    label: "o3-mini",
-  },
-  {
-    value: "claude",
-    label: "claude",
-  },
-];
+import { useAtom } from "jotai";
+import { llmModelAtom, llmComboboxOpenAtom } from "@/atoms/chat";
+import { modelList } from "@/constants/llm-model-list";
 
 export function LLMSelectCombobox() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = useAtom(llmComboboxOpenAtom);
+  const [llmModel, SetLlmModel] = useAtom(llmModelAtom);
+
+  const selectedModel = modelList.find((model) => model.value === llmModel);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,36 +35,42 @@ export function LLMSelectCombobox() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[216px] justify-between"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select LLM model..."}
+          {selectedModel ? (
+            <div className="flex items-center">
+              <img src={selectedModel.logo} alt="" className="mr-3 h-4 w-4" />
+              {selectedModel.label}
+            </div>
+          ) : (
+            "Select LLM model..."
+          )}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[216px] p-0">
         <Command>
           <CommandInput placeholder="Search LLM model..." />
           <CommandList>
             <CommandEmpty>No LLM model found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {modelList.map((model) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  key={model.value}
+                  value={model.value}
+                  onSelect={() => {
+                    SetLlmModel(model.value);
                     setOpen(false);
                   }}
                 >
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      llmModel === model.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {framework.label}
+                  <img src={model.logo} alt="" className="mr-1 h-4 w-4" />
+                  {model.label}
                 </CommandItem>
               ))}
             </CommandGroup>

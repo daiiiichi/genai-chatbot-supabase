@@ -1,27 +1,40 @@
+import { systemPrompts } from "@/lib/prompts";
 import { NextResponse } from "next/server";
 import { AzureOpenAI } from "openai";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-const modelName = process.env.AZURE_OPENAI_MODEL_NAME_O3MINI || "o3-mini";
-const deployment = process.env.AZURE_OPENAI_DEPLOYMENT_NAME_O3MINI;
-const apiVersion = process.env.AZURE_OPENAI_API_VERSION_O3MINI;
 const apiKey = process.env.AZURE_OPENAI_KEY;
 
-const options = { endpoint, apiKey, deployment, apiVersion };
-const client = new AzureOpenAI(options);
-
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, modelName } = await req.json();
 
-  console.log(messages);
+  const messagesWithSystem = [
+    { role: "system", content: systemPrompts.default },
+    ...messages,
+  ];
+
+  let apiVersion = "";
+
+  if (modelName === "o3-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_O3_MINI!;
+  } else if (modelName === "gpt-4o-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_4O_MINI!;
+  } else if (modelName === "gpt-4.1-mini") {
+    apiVersion = process.env.AZURE_OPENAI_API_VERSION_41_MINI!;
+  }
+
+  console.log(messagesWithSystem);
+
+  const options = { endpoint, apiKey, modelName, apiVersion };
+  const client = new AzureOpenAI(options);
 
   const stream = await client.chat.completions.create({
     model: modelName,
-    messages,
+    messages: messagesWithSystem,
     stream: true,
-    max_completion_tokens: 100000,
+    max_completion_tokens: modelName === "gpt-4o-mini" ? 4096 : 10000,
   });
 
   const encoder = new TextEncoder();

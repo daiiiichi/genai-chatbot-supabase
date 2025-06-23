@@ -5,6 +5,7 @@ import { useSetAtom, useAtomValue, useAtom } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
+  llmModelAtom,
   messagesAtom,
 } from "@/atoms/chat";
 import DeleteChatButton from "./delete-chat-button";
@@ -13,6 +14,7 @@ export default function ChatHistoryList() {
   const setMessages = useSetAtom(messagesAtom);
   const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const chatHistories = useAtomValue(chatHistoriesAtom);
+  const SetLlmModel = useSetAtom(llmModelAtom);
 
   return (
     <>
@@ -35,6 +37,7 @@ export default function ChatHistoryList() {
                   const selectedChat = await selectChat(data.chat_session_id);
                   if (selectedChat) {
                     setMessages(selectedChat.messages);
+                    SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
                   }
                 }}
               >
