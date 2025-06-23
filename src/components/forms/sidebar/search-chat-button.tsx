@@ -55,7 +55,7 @@ export default function SearchChatButton() {
                     const selectedChat = await selectChat(data.chat_session_id);
                     if (selectedChat) {
                       setMessages(selectedChat.messages);
-                      SetLlmModel(selectedChat.latestLlmModel!);
+                      SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
                     }
                     setSearchDialogOpen(false);
                   }}

@@ -37,7 +37,7 @@ export default function ChatHistoryList() {
                   const selectedChat = await selectChat(data.chat_session_id);
                   if (selectedChat) {
                     setMessages(selectedChat.messages);
-                    SetLlmModel(selectedChat.latestLlmModel!);
+                    SetLlmModel(selectedChat.latestLlmModel ?? "o3-mini");
                   }
                 }}
               >
