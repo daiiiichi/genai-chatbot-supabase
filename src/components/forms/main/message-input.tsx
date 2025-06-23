@@ -14,7 +14,7 @@ import {
   streamedAnswerAtom,
   userIdAtom,
   llmComboboxOpenAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 import { insertMessage } from "@/lib/supabase/messages";
 import generateTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
@@ -57,7 +57,7 @@ export default function MessageInput() {
       llm_model: userMessageObj.llm_model,
     });
 
-    // llm_modelは回答を得るのに必要ないので、削除
+    // llm_modelはAPI送信には必要ないので、削除
     const apiMessages = addUserMessages.map(({ role, content }) => ({
       role,
       content,

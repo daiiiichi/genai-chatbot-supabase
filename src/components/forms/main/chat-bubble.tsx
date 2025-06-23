@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
-import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms/chat";
+import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms";
 import { TypingIndicator } from "../../ui/typing-indicator";
 import { cn } from "../../../lib/utils";
 import MarkdownDisplay from "../../ui/markdown-display";
@@ -29,7 +29,7 @@ export default function ChatBubble() {
       ref={chatContainerRef}
       className={cn(
         "flex-col overflow-y-auto relative w-full flex-1 space-y-4 pe-2",
-        messages.length > 1 ? "flex" : "hidden"
+        messages.length > 0 ? "flex" : "hidden"
       )}
     >
       {messages
@@ -49,6 +49,7 @@ export default function ChatBubble() {
                   : "mr-auto max-w-[95%]"
               )}
             >
+              {/* アシスタントのメッセージにLLMモデルの種類の表示 */}
               {msg.role === "assistant" && (
                 <Badge className="mb-1" variant={"outline"}>
                   <MessageSquare />
@@ -63,17 +64,18 @@ export default function ChatBubble() {
                     : "bg-muted text-foreground border"
                 )}
               >
-                {msg.role === "user" ? (
-                  msg.content
-                ) : (
+                {/* アシスタントのメッセージのみマークダウン表示 */}
+                {msg.role === "assistant" ? (
                   <MarkdownDisplay content={msg.content} />
+                ) : (
+                  msg.content
                 )}
               </div>
             </div>
           </div>
         ))}
 
-      {/* 回答生成前　および　ストリーム　で返答される回答を表示する場合 */}
+      {/* 回答生成前のインジケーター　および　ストリームで返答される回答を表示する場合 */}
       {isLoading && (
         <div className="flex gap-3 justify-start">
           <div className="max-w-[95%] justify-end">

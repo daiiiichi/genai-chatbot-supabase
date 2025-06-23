@@ -20,3 +20,5 @@ export const modelList = [
     logo: "/icons/gemini-logo.svg",
   },
 ];
+
+export const DEFAULT_LLM_MODEL = "o3-mini";

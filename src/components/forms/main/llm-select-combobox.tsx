@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAtom } from "jotai";
-import { llmModelAtom, llmComboboxOpenAtom } from "@/atoms/chat";
+import { llmModelAtom, llmComboboxOpenAtom } from "@/atoms";
 import { modelList } from "@/constants/llm-model-list";
 
 export function LLMSelectCombobox() {
