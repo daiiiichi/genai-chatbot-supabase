@@ -17,7 +17,7 @@ import {
   currentChatIdAtom,
   llmModelAtom,
   messagesAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 import { selectChat } from "@/lib/chat";
 
 export default function SearchChatButton() {

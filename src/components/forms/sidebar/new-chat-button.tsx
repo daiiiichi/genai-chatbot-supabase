@@ -7,7 +7,7 @@ import {
   llmModelAtom,
   messagesAtom,
   userIdAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 
 export default function NewChatButton() {
   const userId = useAtomValue(userIdAtom);

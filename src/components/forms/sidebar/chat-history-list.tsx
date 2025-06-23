@@ -7,7 +7,7 @@ import {
   currentChatIdAtom,
   llmModelAtom,
   messagesAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 import DeleteChatButton from "./delete-chat-button";
 
 export default function ChatHistoryList() {

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
-import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms/chat";
+import { isLoadingAtom, messagesAtom, streamedAnswerAtom } from "@/atoms";
 import { TypingIndicator } from "../../ui/typing-indicator";
 import { cn } from "../../../lib/utils";
 import MarkdownDisplay from "../../ui/markdown-display";

@@ -10,7 +10,7 @@ import {
   currentChatIdAtom,
   messagesAtom,
   userIdAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 import { startNewChat } from "@/lib/chat";
 import { fetchChatHistories } from "@/lib/chat-histories";
 

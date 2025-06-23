@@ -18,7 +18,7 @@ import {
   llmModelAtom,
   messagesAtom,
   userIdAtom,
-} from "@/atoms/chat";
+} from "@/atoms";
 
 export default function DeleteAllChatsButton() {
   const userId = useAtomValue(userIdAtom);

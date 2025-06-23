@@ -12,7 +12,7 @@ import {
 
 import { usePathname } from "next/navigation";
 import { useSetAtom, useAtomValue } from "jotai";
-import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms/chat";
+import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import NewChatButton from "../forms/sidebar/new-chat-button";
 import SearchChatButton from "../forms/sidebar/search-chat-button";

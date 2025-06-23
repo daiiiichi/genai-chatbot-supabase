@@ -2,24 +2,10 @@ import { atom } from "jotai";
 import { Message } from "../types/chat";
 import type { Database } from "../../database.types";
 
-const currentChatIdAtom = atom<string>("");
-const messagesAtom = atom<Message[]>([]);
-const chatHistoriesAtom = atom<
+export const currentChatIdAtom = atom<string>("");
+export const messagesAtom = atom<Message[]>([]);
+export const chatHistoriesAtom = atom<
   Database["public"]["Tables"]["chat_sessions"]["Row"][]
 >([]);
-const isLoadingAtom = atom<boolean>(false);
-const streamedAnswerAtom = atom<string>("");
-const userIdAtom = atom<string>("");
-const llmModelAtom = atom<string>("o3-mini");
-const llmComboboxOpenAtom = atom<boolean>(false);
-
-export {
-  currentChatIdAtom,
-  messagesAtom,
-  chatHistoriesAtom,
-  isLoadingAtom,
-  streamedAnswerAtom,
-  userIdAtom,
-  llmModelAtom,
-  llmComboboxOpenAtom,
-};
+export const streamedAnswerAtom = atom<string>("");
+export const llmModelAtom = atom<string>("o3-mini");
