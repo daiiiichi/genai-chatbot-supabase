@@ -29,7 +29,7 @@ export default function ChatBubble() {
       ref={chatContainerRef}
       className={cn(
         "flex-col overflow-y-auto relative w-full flex-1 space-y-4 pe-2",
-        messages.length > 1 ? "flex" : "hidden"
+        messages.length > 0 ? "flex" : "hidden"
       )}
     >
       {messages
