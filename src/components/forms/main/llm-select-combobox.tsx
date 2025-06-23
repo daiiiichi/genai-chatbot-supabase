@@ -26,9 +26,7 @@ export function LLMSelectCombobox() {
   const [open, setOpen] = useAtom(llmComboboxOpenAtom);
   const [llmModel, SetLlmModel] = useAtom(llmModelAtom);
 
-  const selectedModel = modelList.find(
-    (model) => model.value === llmModel.value
-  );
+  const selectedModel = modelList.find((model) => model.value === llmModel);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -61,19 +59,14 @@ export function LLMSelectCombobox() {
                   key={model.value}
                   value={model.value}
                   onSelect={() => {
-                    SetLlmModel({
-                      value: model.value,
-                      api_version: model.api_version,
-                    });
+                    SetLlmModel(model.value);
                     setOpen(false);
                   }}
                 >
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      llmModel.value === model.value
-                        ? "opacity-100"
-                        : "opacity-0"
+                      llmModel === model.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <img src={model.logo} alt="" className="mr-1 h-4 w-4" />

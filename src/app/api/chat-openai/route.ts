@@ -2,7 +2,7 @@ import { systemPrompts } from "@/lib/prompts";
 import { NextResponse } from "next/server";
 import { AzureOpenAI } from "openai";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
 const apiKey = process.env.AZURE_OPENAI_KEY;
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   let apiVersion = "";
 
-  if (modelName === "O3-mini") {
+  if (modelName === "o3-mini") {
     apiVersion = process.env.AZURE_OPENAI_API_VERSION_O3_MINI!;
   } else if (modelName === "gpt-4o-mini") {
     apiVersion = process.env.AZURE_OPENAI_API_VERSION_4O_MINI!;

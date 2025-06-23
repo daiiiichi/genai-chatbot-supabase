@@ -53,30 +53,34 @@ const startNewChat = async (
 
 const selectChat = async (
   selectedChatId: string
-): Promise<{ messages: Message[] }> => {
+): Promise<{ messages: Message[]; latestLlmModel: string | null }> => {
   const { data } = await supabase
     .from("messages")
     .select()
     .eq("chat_session_id", selectedChatId);
 
   if (!data) {
-    return { messages: [] };
+    return { messages: [], latestLlmModel: null };
   }
 
-  const messages: Message[] = [
-    ...data
-      .sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      )
-      .map((m) => ({
-        role: m.role as "user" | "assistant" | "system",
-        content: m.content as string,
-        llm_model: m.llm_model as string | null,
-      })),
-  ];
+  // 日時の順番に並べる
+  const sorted = data.sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
 
-  return { messages };
+  const messages: Message[] = sorted.map((m) => ({
+    role: m.role as "user" | "assistant" | "system",
+    content: m.content as string,
+    llm_model: m.llm_model as string | null,
+  }));
+
+  // 最新の assistant メッセージの LLMモデル を取得
+  const latestLlmModel =
+    [...sorted].reverse().find((m) => m.role === "assistant")?.llm_model ??
+    null;
+
+  return { messages, latestLlmModel };
 };
 
 const deleteChat = async (selectedChatId: string) => {

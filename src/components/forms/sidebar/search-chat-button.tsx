@@ -15,6 +15,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
+  llmModelAtom,
   messagesAtom,
 } from "@/atoms/chat";
 import { selectChat } from "@/lib/chat";
@@ -24,6 +25,7 @@ export default function SearchChatButton() {
   const chatHistories = useAtomValue(chatHistoriesAtom);
   const setMessages = useSetAtom(messagesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
+  const SetLlmModel = useSetAtom(llmModelAtom);
 
   return (
     <SidebarMenuItem>
@@ -53,6 +55,7 @@ export default function SearchChatButton() {
                     const selectedChat = await selectChat(data.chat_session_id);
                     if (selectedChat) {
                       setMessages(selectedChat.messages);
+                      SetLlmModel(selectedChat.latestLlmModel!);
                     }
                     setSearchDialogOpen(false);
                   }}
