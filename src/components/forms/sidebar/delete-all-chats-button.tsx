@@ -11,7 +11,8 @@ import {
 import { Button } from "../../ui/button";
 import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
 import { Trash2 } from "lucide-react";
-import { startNewChat, deleteAllChats } from "@/lib/chat";
+import { startNewChat } from "@/lib/chat";
+import { deleteAllChats } from "@/lib/api/delete-all-chats";
 import { useSetAtom, useAtomValue } from "jotai";
 import {
   currentChatIdAtom,
