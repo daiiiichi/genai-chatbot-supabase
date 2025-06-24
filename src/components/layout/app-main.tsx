@@ -11,7 +11,7 @@ import {
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
-import { startNewChat } from "@/lib/chat";
+import { startNewChat } from "@/lib/api/start-new-chat";
 import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
 
 export default function AppMain() {
