@@ -58,10 +58,15 @@ export async function POST(req: Request) {
         "Content-Type": "text/plain; charset=utf-8",
       },
     });
-  } catch (err: any) {
-    return (
-      new NextResponse(JSON.stringify({ error: err.messages })),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+  } catch (err: unknown) {
+    let errorMessage = "Unknown error";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+
+    return new NextResponse(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
