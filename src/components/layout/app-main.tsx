@@ -12,7 +12,7 @@ import {
   userIdAtom,
 } from "@/atoms";
 import { startNewChat } from "@/lib/chat";
-import { fetchChatHistories } from "@/lib/chat-histories";
+import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
 
 export default function AppMain() {
   const { session } = useAuth();

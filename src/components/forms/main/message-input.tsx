@@ -17,7 +17,7 @@ import {
 } from "@/atoms";
 import { insertMessage } from "@/lib/api/insert-message";
 import generateTitle from "@/lib/generate-chat-title";
-import { fetchChatHistories } from "@/lib/chat-histories";
+import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheckBig } from "lucide-react";
