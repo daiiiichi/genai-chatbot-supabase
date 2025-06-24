@@ -1,4 +1,4 @@
-import { supabase } from "./supabase/supabase-client";
+import { supabase } from "./api/supabase-client";
 
 export const fetchChatHistories = async (user_id: string) => {
   const { data, error } = await supabase

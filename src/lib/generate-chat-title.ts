@@ -1,6 +1,6 @@
 import { Message } from "../types/chat";
 import { systemPrompts } from "./prompts";
-import { supabase } from "./supabase/supabase-client";
+import { supabase } from "./api/supabase-client";
 
 export default async function generateTitle(
   currentChatId: string,
