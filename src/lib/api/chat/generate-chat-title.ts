@@ -1,41 +1,26 @@
-import { Message } from "../../../types/chat";
-import { systemPrompts } from "../../prompts";
-import { supabase } from "../supabase-client";
+import { Message } from "@/types/chat";
 
-export default async function generateTitle(
+export default async function generateChatTitle(
   currentChatId: string,
   assistantAnswerObj: Message
 ) {
-  // 現在の　chat_session　のタイトルを取得
-  const { data } = await supabase
-    .from("chat_sessions")
-    .select("title")
-    .eq("chat_session_id", currentChatId);
-
-  // タイトルが初期値の　"New Chat"　の場合は、タイトル作成
-  let chatTitle = data && data.length > 0 ? data[0].title : null;
-  if (chatTitle === "New Chat") {
-    const titleRes = await fetch("/api/chat/generate-title", {
+  try {
+    const res = await fetch("/api/chat/generate-title", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: [
-          {
-            id: 0,
-            role: "system",
-            content: systemPrompts.generateTitle,
-          },
-          assistantAnswerObj,
-        ],
+        chatId: currentChatId,
+        assistantMessage: assistantAnswerObj,
       }),
     });
-    chatTitle = await titleRes.text();
-  }
-  const now = new Date().toISOString();
 
-  // タイトルの更新
-  await supabase
-    .from("chat_sessions")
-    .update({ title: chatTitle, updated_at: now })
-    .eq("chat_session_id", currentChatId);
+    if (!res.ok) {
+      throw new Error("タイトル生成に失敗しました");
+    }
+
+    const { title } = await res.json();
+    return title;
+  } catch (err) {
+    console.error("タイトル生成エラー（クライアント）:", err);
+  }
 }

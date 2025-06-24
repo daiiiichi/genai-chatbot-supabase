@@ -16,7 +16,7 @@ import {
   llmComboboxOpenAtom,
 } from "@/atoms";
 import { insertMessage } from "@/lib/api/message/insert-message";
-import generateTitle from "@/lib/api/chat/generate-chat-title";
+import generateChatTitle from "@/lib/api/chat/generate-chat-title";
 import { fetchChatHistories } from "@/lib/api/history/fetch-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
@@ -129,7 +129,7 @@ export default function MessageInput() {
       // チャットタイトルの作成
       // [TODO] タイトル作成の際に使用する会話の検討
       // １回目の返答のみを用いてタイトル作成（2025/6/19）
-      await generateTitle(currentChatId, assistantAnswerObj);
+      await generateChatTitle(currentChatId, assistantAnswerObj);
       const updatedChathistories = await fetchChatHistories(userId);
       setChatHistories(updatedChathistories);
     } catch (err: unknown) {
