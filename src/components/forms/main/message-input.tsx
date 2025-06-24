@@ -132,8 +132,8 @@ export default function MessageInput() {
       await generateTitle(currentChatId, assistantAnswerObj);
       const updatedChathistories = await fetchChatHistories(userId);
       setChatHistories(updatedChathistories);
-    } catch (error: any) {
-      console.error("チャット送信中にエラー:", error);
+    } catch (err: unknown) {
+      console.error("チャット送信中にエラー:", err);
       alert(
         "メッセージの送信中にエラーが発生しました。\n再読み込みをしてから再度実行をお願いします。"
       );

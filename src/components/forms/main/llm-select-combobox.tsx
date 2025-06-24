@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +39,13 @@ export function LLMSelectCombobox() {
         >
           {selectedModel ? (
             <div className="flex items-center">
-              <img src={selectedModel.logo} alt="" className="mr-3 h-4 w-4" />
+              <Image
+                src={selectedModel.logo}
+                alt=""
+                width={16}
+                height={16}
+                className="mr-3"
+              />
               {selectedModel.label}
             </div>
           ) : (
@@ -69,7 +75,13 @@ export function LLMSelectCombobox() {
                       llmModel === model.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  <img src={model.logo} alt="" className="mr-1 h-4 w-4" />
+                  <Image
+                    src={model.logo}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="mr-1"
+                  />
                   {model.label}
                 </CommandItem>
               ))}
