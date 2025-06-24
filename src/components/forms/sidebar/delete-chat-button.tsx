@@ -54,7 +54,7 @@ export default function DeleteChatButton({
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Confirm Deletion: "{chat_title}"</DialogTitle>
+            <DialogTitle>Confirm Deletion 「{chat_title}」</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete this message as well as all chats?
               This action cannot be undone.
