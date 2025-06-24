@@ -1,5 +1,5 @@
 export const selectChat = async (chatSessionId: string) => {
-  const res = await fetch("/api/select-chat", {
+  const res = await fetch("/api/chat/select", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chatSessionId }),

@@ -11,8 +11,8 @@ import {
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
-import { startNewChat } from "@/lib/api/start-new-chat";
-import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
+import { startNewChat } from "@/lib/api/chat/start-new-chat";
+import { fetchChatHistories } from "@/lib/api/history/fetch-chat-histories";
 
 export default function AppMain() {
   const { session } = useAuth();

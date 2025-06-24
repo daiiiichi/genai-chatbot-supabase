@@ -1,5 +1,5 @@
 export const deleteChat = async (chatSessionId: string) => {
-  const res = await fetch("/api/delete-chat", {
+  const res = await fetch("/api/chat/delete", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

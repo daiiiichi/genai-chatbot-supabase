@@ -1,5 +1,5 @@
 export const deleteAllChats = async (userId: string) => {
-  const res = await fetch("/api/delete-all-chats", {
+  const res = await fetch("/api/history/delete", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId }),

@@ -18,7 +18,7 @@ import {
   llmModelAtom,
   messagesAtom,
 } from "@/atoms";
-import { selectChat } from "@/lib/api/select-chat";
+import { selectChat } from "@/lib/api/chat/select-chat";
 import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 export default function SearchChatButton() {

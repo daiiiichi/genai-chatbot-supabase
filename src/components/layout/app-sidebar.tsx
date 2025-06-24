@@ -13,7 +13,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useSetAtom, useAtomValue } from "jotai";
 import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms";
-import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
+import { fetchChatHistories } from "@/lib/api/history/fetch-chat-histories";
 import NewChatButton from "../forms/sidebar/new-chat-button";
 import SearchChatButton from "../forms/sidebar/search-chat-button";
 import DeleteAllChatsButton from "../forms/sidebar/delete-all-chats-button";

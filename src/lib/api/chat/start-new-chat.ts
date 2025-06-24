@@ -1,5 +1,5 @@
 export const startNewChat = async (userId: string) => {
-  const res = await fetch("/api/start-new-chat", {
+  const res = await fetch("/api/chat/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId }),

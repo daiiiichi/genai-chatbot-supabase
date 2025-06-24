@@ -15,9 +15,9 @@ import {
   userIdAtom,
   llmComboboxOpenAtom,
 } from "@/atoms";
-import { insertMessage } from "@/lib/api/insert-message";
-import generateTitle from "@/lib/generate-chat-title";
-import { fetchChatHistories } from "@/lib/api/fetch-chat-histories";
+import { insertMessage } from "@/lib/api/message/insert-message";
+import generateTitle from "@/lib/api/chat/generate-chat-title";
+import { fetchChatHistories } from "@/lib/api/history/fetch-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheckBig } from "lucide-react";
@@ -68,13 +68,13 @@ export default function MessageInput() {
       let res: Response;
 
       if (llmModel.startsWith("gemini")) {
-        res = await fetch("/api/chat-gemini", {
+        res = await fetch("/api/answer/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ messages: apiMessages }),
         });
       } else {
-        res = await fetch("/api/chat-openai", {
+        res = await fetch("/api/answer/openai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

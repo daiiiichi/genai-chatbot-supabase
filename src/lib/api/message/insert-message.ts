@@ -11,7 +11,7 @@ export async function insertMessage({
   content: string;
   llm_model: string | null;
 }) {
-  const res = await fetch("/api/insert-message", {
+  const res = await fetch("/api/message/insert", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
