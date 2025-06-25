@@ -1,5 +1,5 @@
 export async function fetchChatHistories(userId: string) {
-  const res = await fetch("/api/history/get", {
+  const res = await fetch("/api/history/load", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId }),
