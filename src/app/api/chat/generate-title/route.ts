@@ -31,6 +31,12 @@ export async function POST(req: NextRequest) {
 
     const currentTitle = existing?.[0]?.title;
     if (currentTitle !== "New Chat") {
+      // 暫定的な修正
+      // タイトルの作成と日時更新二つの役割が混在してしまっている
+      await supabase
+        .from("chat_sessions")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("chat_session_id", chatId);
       return NextResponse.json({ title: currentTitle }, { status: 200 });
     }
 
@@ -51,12 +57,11 @@ export async function POST(req: NextRequest) {
     });
 
     const title = completion.choices[0].message.content;
-    const now = new Date().toISOString();
 
     // タイトル更新
     await supabase
       .from("chat_sessions")
-      .update({ title, updated_at: now })
+      .update({ title, updated_at: new Date().toISOString() })
       .eq("chat_session_id", chatId);
 
     return NextResponse.json({ title }, { status: 200 });
