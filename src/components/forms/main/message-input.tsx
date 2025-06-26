@@ -16,7 +16,7 @@ import {
   llmComboboxOpenAtom,
 } from "@/atoms";
 import { insertMessage } from "@/lib/api/message/insert-message";
-import generateChatTitle from "@/lib/generate-chat-title";
+import generateChatTitle from "@/lib/api/chat/generate-chat-title";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
