@@ -15,7 +15,7 @@ import {
   userIdAtom,
   llmComboboxOpenAtom,
 } from "@/atoms";
-import { insertMessage } from "@/lib/supabase/messages";
+import { insertMessage } from "@/lib/api/message/insert-message";
 import generateChatTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import { Message } from "@/types/chat";
