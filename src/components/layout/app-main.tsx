@@ -13,6 +13,9 @@ import {
 } from "@/atoms";
 import { startNewChat } from "@/lib/api/chat/start-new-chat";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
+import { Button } from "../ui/button";
+import { CodeXml } from "lucide-react";
+import SamplePrompt from "../forms/main/sumple-prompt";
 
 export default function AppMain() {
   const { session } = useAuth();
@@ -57,6 +60,7 @@ export default function AppMain() {
         <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
           <ChatBubble />
           <MessageInput />
+          <SamplePrompt />
         </div>
       </div>
     </div>

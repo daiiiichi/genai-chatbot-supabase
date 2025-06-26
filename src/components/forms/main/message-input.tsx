@@ -14,6 +14,7 @@ import {
   streamedAnswerAtom,
   userIdAtom,
   llmComboboxOpenAtom,
+  userInputAtom,
 } from "@/atoms";
 import { insertMessage } from "@/lib/api/message/insert-message";
 import generateChatTitle from "@/lib/api/chat/generate-chat-title";
@@ -24,7 +25,7 @@ import { CircleCheckBig } from "lucide-react";
 import { sendMessageToLLM } from "@/lib/api/answer/send-message-to-llm";
 
 export default function MessageInput() {
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useAtom(userInputAtom);
   const currentChatId = useAtomValue(currentChatIdAtom);
   const [messages, setMessages] = useAtom(messagesAtom);
   const setChatHistories = useSetAtom(chatHistoriesAtom);
