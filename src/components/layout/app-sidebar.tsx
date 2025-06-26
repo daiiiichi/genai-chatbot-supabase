@@ -13,7 +13,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useSetAtom, useAtomValue } from "jotai";
 import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms";
-import { fetchChatHistories } from "@/lib/chat-histories";
+import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 import NewChatButton from "../forms/sidebar/new-chat-button";
 import SearchChatButton from "../forms/sidebar/search-chat-button";
 import DeleteAllChatsButton from "../forms/sidebar/delete-all-chats-button";
@@ -29,7 +29,7 @@ export default function AppSidebar() {
 
   useEffect(() => {
     const fetchHistories = async (user_id: string) => {
-      const histories = await fetchChatHistories(user_id);
+      const histories = await loadChatHistories(user_id);
       setChatHistories(histories);
     };
     if (userId) {

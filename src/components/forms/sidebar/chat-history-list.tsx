@@ -1,5 +1,5 @@
 import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
-import { selectChat } from "../../../lib/chat";
+import { selectChat } from "@/lib/api/chat/select-chat";
 import { cn, toJST } from "@/lib/utils";
 import { useSetAtom, useAtomValue, useAtom } from "jotai";
 import {

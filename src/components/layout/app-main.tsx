@@ -11,8 +11,8 @@ import {
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
-import { startNewChat } from "@/lib/chat";
-import { fetchChatHistories } from "@/lib/chat-histories";
+import { startNewChat } from "@/lib/api/chat/start-new-chat";
+import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 
 export default function AppMain() {
   const { session } = useAuth();
@@ -38,7 +38,7 @@ export default function AppMain() {
         setCurrentChatId(newChat.chatSessionId);
       }
 
-      const chatHistories = await fetchChatHistories(session?.user.id);
+      const chatHistories = await loadChatHistories(session?.user.id);
       setChatHistories(chatHistories);
     };
     initialize();

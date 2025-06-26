@@ -1,4 +1,4 @@
-import { convertToGeminiFormat } from "@/lib/gemini";
+import { convertToGeminiFormat } from "@/lib/api/answer/gemini";
 import { systemPrompts } from "@/lib/prompts";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
