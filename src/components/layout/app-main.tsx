@@ -13,8 +13,6 @@ import {
 } from "@/atoms";
 import { startNewChat } from "@/lib/api/chat/start-new-chat";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
-import { Button } from "../ui/button";
-import { CodeXml } from "lucide-react";
 import SamplePrompt from "../forms/main/sumple-prompt";
 
 export default function AppMain() {
