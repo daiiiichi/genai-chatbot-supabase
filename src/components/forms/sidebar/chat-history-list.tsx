@@ -10,6 +10,7 @@ import {
 } from "@/atoms";
 import DeleteChatButton from "./delete-chat-button";
 import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ChatHistoryList() {
   const setMessages = useSetAtom(messagesAtom);
@@ -25,6 +26,14 @@ export default function ChatHistoryList() {
       SetLlmModel(selectedChat.latestLlmModel ?? DEFAULT_LLM_MODEL);
     }
   };
+
+  if (chatHistories.length === 0) {
+    return (
+      <div className="mt-4">
+        <Spinner className="text-primary" />;
+      </div>
+    );
+  }
 
   return (
     <>
