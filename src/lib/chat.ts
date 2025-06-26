@@ -82,11 +82,4 @@ const selectChat = async (
   return { messages, latestLlmModel };
 };
 
-const deleteAllChats = async (userId: string) => {
-  if (!userId) {
-    throw new Error("User session is not available.");
-  }
-  await supabase.from("chat_sessions").delete().eq("user_id", userId);
-};
-
-export { startNewChat, selectChat, deleteAllChats };
+export { startNewChat, selectChat };
