@@ -16,7 +16,7 @@ import {
   llmComboboxOpenAtom,
 } from "@/atoms";
 import { insertMessage } from "@/lib/supabase/messages";
-import generateTitle from "@/lib/generate-chat-title";
+import generateChatTitle from "@/lib/generate-chat-title";
 import { fetchChatHistories } from "@/lib/chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
@@ -68,13 +68,13 @@ export default function MessageInput() {
       let res: Response;
 
       if (llmModel.startsWith("gemini")) {
-        res = await fetch("/api/chat-gemini", {
+        res = await fetch("/api/answer/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ messages: apiMessages }),
         });
       } else {
-        res = await fetch("/api/chat-openai", {
+        res = await fetch("/api/answer/openai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -129,7 +129,7 @@ export default function MessageInput() {
       // チャットタイトルの作成
       // [TODO] タイトル作成の際に使用する会話の検討
       // １回目の返答のみを用いてタイトル作成（2025/6/19）
-      await generateTitle(currentChatId, assistantAnswerObj);
+      await generateChatTitle(currentChatId, assistantAnswerObj);
       const updatedChathistories = await fetchChatHistories(userId);
       setChatHistories(updatedChathistories);
     } catch (err: unknown) {

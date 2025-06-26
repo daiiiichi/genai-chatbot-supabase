@@ -2,7 +2,7 @@ import { Message } from "../types/chat";
 import { systemPrompts } from "./prompts";
 import { supabase } from "./supabase/supabase-client";
 
-export default async function generateTitle(
+export default async function generateChatTitle(
   currentChatId: string,
   assistantAnswerObj: Message
 ) {
@@ -15,7 +15,7 @@ export default async function generateTitle(
   // タイトルが初期値の　"New Chat"　の場合は、タイトル作成
   let chatTitle = data && data.length > 0 ? data[0].title : null;
   if (chatTitle === "New Chat") {
-    const titleRes = await fetch("/api/generate-title", {
+    const titleRes = await fetch("/api/chat/generate-title", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
