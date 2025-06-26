@@ -41,8 +41,8 @@ export default function UserInformation() {
             </div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut className="mr-1" onClick={signOut} /> Sign out
+          <DropdownMenuItem onClick={signOut}>
+            <LogOut className="mr-1" /> Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
