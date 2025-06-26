@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
-import { startNewChat } from "@/lib/chat";
+import { startNewChat } from "@/lib/api/chat/start-new-chat";
 import { deleteChat } from "@/lib/api/chat/delete-chat";
 import { useSetAtom, useAtomValue } from "jotai";
 import {

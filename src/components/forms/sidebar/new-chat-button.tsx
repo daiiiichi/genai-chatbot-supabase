@@ -1,6 +1,6 @@
 import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
 import { FilePlus2 } from "lucide-react";
-import { startNewChat } from "@/lib/chat";
+import { startNewChat } from "@/lib/api/chat/start-new-chat";
 import { useSetAtom, useAtomValue } from "jotai";
 import {
   currentChatIdAtom,
