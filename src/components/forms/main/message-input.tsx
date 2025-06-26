@@ -17,7 +17,7 @@ import {
 } from "@/atoms";
 import { insertMessage } from "@/lib/api/message/insert-message";
 import generateChatTitle from "@/lib/generate-chat-title";
-import { fetchChatHistories } from "@/lib/chat-histories";
+import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheckBig } from "lucide-react";
@@ -130,8 +130,8 @@ export default function MessageInput() {
       // [TODO] タイトル作成の際に使用する会話の検討
       // １回目の返答のみを用いてタイトル作成（2025/6/19）
       await generateChatTitle(currentChatId, assistantAnswerObj);
-      const updatedChathistories = await fetchChatHistories(userId);
-      setChatHistories(updatedChathistories);
+      const updatedChatHistories = await loadChatHistories(userId);
+      setChatHistories(updatedChatHistories);
     } catch (err: unknown) {
       console.error("チャット送信中にエラー:", err);
       alert(
