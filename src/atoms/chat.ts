@@ -10,3 +10,4 @@ export const chatHistoriesAtom = atom<
 >([]);
 export const streamedAnswerAtom = atom<string>("");
 export const llmModelAtom = atom<string>(DEFAULT_LLM_MODEL);
+export const userInputAtom = atom<string>("");
