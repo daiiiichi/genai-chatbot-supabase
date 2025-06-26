@@ -21,6 +21,7 @@ import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 import { Message } from "@/types/chat";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheckBig } from "lucide-react";
+import { sendMessageToLLM } from "@/lib/api/answer/send-message-to-llm";
 
 export default function MessageInput() {
   const [userInput, setUserInput] = useState("");
@@ -33,10 +34,7 @@ export default function MessageInput() {
   const llmModel = useAtomValue(llmModelAtom);
   const setLlmComboboxOpen = useSetAtom(llmComboboxOpenAtom);
 
-  // メッセージ送信時の処理
   const sendMessage = async () => {
-    if (!userInput.trim()) return;
-
     // ユーザーメッセージの成型とメッセージ送信時の前準備
     const userMessageObj: Message = {
       role: "user",
@@ -57,56 +55,21 @@ export default function MessageInput() {
       llm_model: userMessageObj.llm_model,
     });
 
-    // llm_modelはAPI送信には必要ないので、削除
-    const apiMessages = addUserMessages.map(({ role, content }) => ({
-      role,
-      content,
-    }));
-
     try {
-      // ストリームで回答を収集
-      let res: Response;
+      const answer = await sendMessageToLLM({
+        messages: addUserMessages,
+        modelName: llmModel,
+        onChunk: (chunk) => {
+          setStreamedAnswer((prev) => prev + chunk);
+        },
+      });
 
-      if (llmModel.startsWith("gemini")) {
-        res = await fetch("/api/answer/gemini", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: apiMessages }),
-        });
-      } else {
-        res = await fetch("/api/answer/openai", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: apiMessages,
-            modelName: llmModel,
-          }),
-        });
-      }
-
-      if (!res.ok) {
-        const errorData = await res.text();
-        throw new Error(errorData || "サーバーエラーが発生しました。");
-      }
-
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder("utf-8");
-      if (!reader) return;
-
-      let fullreply = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        fullreply += chunk;
-        setStreamedAnswer((prev) => prev + chunk);
-      }
+      setIsLoading(false);
 
       // 回答の成型
       const assistantAnswerObj: Message = {
         role: "assistant",
-        content: fullreply,
+        content: answer,
         llm_model: llmModel,
       };
       const addAssistantMessages: Message[] = [
@@ -123,8 +86,6 @@ export default function MessageInput() {
         content: assistantAnswerObj.content,
         llm_model: llmModel,
       });
-
-      setIsLoading(false);
 
       // チャットタイトルの作成
       // [TODO] タイトル作成の際に使用する会話の検討
