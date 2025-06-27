@@ -10,7 +10,6 @@ import {
   SidebarMenu,
 } from "../ui/sidebar";
 
-import { usePathname } from "next/navigation";
 import { useSetAtom, useAtomValue } from "jotai";
 import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
