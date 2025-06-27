@@ -13,14 +13,13 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // sessionがnullのときのみリダイレクト
     if (session === null) {
       router.push("/login");
     }
   }, [session, router]);
 
-  // sessionがundefinedならローディング
-  if (session === undefined) {
+  // session が undefined または null ならローディング
+  if (session === undefined || session === null) {
     return <div>Loading...</div>;
   }
 
