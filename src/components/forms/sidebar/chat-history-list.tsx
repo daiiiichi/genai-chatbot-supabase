@@ -11,14 +11,17 @@ import {
 import DeleteChatButton from "./delete-chat-button";
 import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export default function ChatHistoryList() {
   const setMessages = useSetAtom(messagesAtom);
   const [currentChatId, setCurrentChatId] = useAtom(currentChatIdAtom);
   const chatHistories = useAtomValue(chatHistoriesAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
+  const router = useRouter();
 
   const handleSelectChat = async (chatId: string) => {
+    router.push(`/?chatId=${chatId}`);
     setCurrentChatId(chatId);
     const selectedChat = await selectChat(chatId);
     if (selectedChat) {

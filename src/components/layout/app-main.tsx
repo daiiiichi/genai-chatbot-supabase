@@ -8,12 +8,16 @@ import { useSetAtom } from "jotai";
 import {
   chatHistoriesAtom,
   currentChatIdAtom,
+  llmModelAtom,
   messagesAtom,
   userIdAtom,
 } from "@/atoms";
 import { startNewChat } from "@/lib/api/chat/start-new-chat";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
 import SamplePrompt from "../forms/main/sumple-prompt";
+import { useRouter, useSearchParams } from "next/navigation";
+import { selectChat } from "@/lib/api/chat/select-chat";
+import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
 
 export default function AppMain() {
   const { session } = useAuth();
@@ -22,6 +26,9 @@ export default function AppMain() {
   const setChatHistories = useSetAtom(chatHistoriesAtom);
   const [initialized, setInitialized] = useState(false);
   const setUserId = useSetAtom(userIdAtom);
+  const setLlmModel = useSetAtom(llmModelAtom);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // ページ立ち上げ時の処理
   useEffect(() => {
@@ -32,9 +39,23 @@ export default function AppMain() {
       setInitialized(true); // "New Chat" の二重作成を防ぐ目的
       setUserId(session.user.id);
 
-      // ページ立ち上げ時には必ず新規チャットを作成
+      // 画面リロードやお気に入り保存の場合、URLからchatIdを参照する
+      const chatIdFromURL = searchParams.get("chatId");
+
+      if (chatIdFromURL) {
+        const existingChat = await selectChat(chatIdFromURL);
+        if (existingChat) {
+          setMessages(existingChat.messages);
+          setCurrentChatId(chatIdFromURL);
+          setLlmModel(existingChat.latestLlmModel ?? DEFAULT_LLM_MODEL);
+          return;
+        }
+      }
+
+      // ページ立ち上げ時には新規チャットを作成
       const newChat = await startNewChat(session.user.id);
       if (newChat) {
+        router.push(`/?chatId=${newChat.chatSessionId}`);
         setMessages(newChat.messages);
         setCurrentChatId(newChat.chatSessionId);
       }
