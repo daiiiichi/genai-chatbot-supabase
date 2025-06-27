@@ -53,7 +53,7 @@ export default function AppSidebar() {
         <SidebarGroup className="flex-1 overflow-hidden">
           <SidebarGroupLabel>chat</SidebarGroupLabel>
           <SidebarGroupContent className="h-full">
-            <div className="h-full overflow-y-auto pr-2">
+            <div className="h-full overflow-y-auto pr-2 pb-8">
               <SidebarMenu>
                 <ChatHistoryList />
               </SidebarMenu>
