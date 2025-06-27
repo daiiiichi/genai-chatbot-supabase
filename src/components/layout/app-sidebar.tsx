@@ -10,7 +10,6 @@ import {
   SidebarMenu,
 } from "../ui/sidebar";
 
-import { usePathname } from "next/navigation";
 import { useSetAtom, useAtomValue } from "jotai";
 import { chatHistoriesAtom, currentChatIdAtom, userIdAtom } from "@/atoms";
 import { loadChatHistories } from "@/lib/api/history/load-chat-histories";
@@ -20,9 +19,6 @@ import DeleteAllChatsButton from "../forms/sidebar/delete-all-chats-button";
 import ChatHistoryList from "../forms/sidebar/chat-history-list";
 
 export default function AppSidebar() {
-  const pathname = usePathname();
-  const showSidebar = !pathname.startsWith("/login");
-
   const setChatHistories = useSetAtom(chatHistoriesAtom);
   const currentChatId = useAtomValue(currentChatIdAtom);
   const userId = useAtomValue(userIdAtom);
@@ -38,34 +34,32 @@ export default function AppSidebar() {
   }, [currentChatId, userId, setChatHistories]);
 
   return (
-    showSidebar && (
-      <Sidebar>
-        <SidebarContent className="flex flex-col h-screen">
-          {/* チャット管理機能（新規作成、検索、削除） */}
-          <SidebarGroup>
-            <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <NewChatButton />
-                <SearchChatButton />
-                <DeleteAllChatsButton />
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+    <Sidebar>
+      <SidebarContent className="flex flex-col h-screen">
+        {/* チャット管理機能（新規作成、検索、削除） */}
+        <SidebarGroup>
+          <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <NewChatButton />
+              <SearchChatButton />
+              <DeleteAllChatsButton />
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-          {/* チャット履歴 */}
-          <SidebarGroup className="flex-1 overflow-hidden">
-            <SidebarGroupLabel>chat</SidebarGroupLabel>
-            <SidebarGroupContent className="h-full">
-              <div className="h-full overflow-y-auto pr-2">
-                <SidebarMenu>
-                  <ChatHistoryList />
-                </SidebarMenu>
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-    )
+        {/* チャット履歴 */}
+        <SidebarGroup className="flex-1 overflow-hidden">
+          <SidebarGroupLabel>chat</SidebarGroupLabel>
+          <SidebarGroupContent className="h-full">
+            <div className="h-full overflow-y-auto pr-2 pb-8">
+              <SidebarMenu>
+                <ChatHistoryList />
+              </SidebarMenu>
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 }
