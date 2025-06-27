@@ -20,6 +20,7 @@ import {
 } from "@/atoms";
 import { selectChat } from "@/lib/api/chat/select-chat";
 import { DEFAULT_LLM_MODEL } from "@/constants/llm-model-list";
+import { useRouter } from "next/navigation";
 
 export default function SearchChatButton() {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
@@ -27,8 +28,10 @@ export default function SearchChatButton() {
   const setMessages = useSetAtom(messagesAtom);
   const setCurrentChatId = useSetAtom(currentChatIdAtom);
   const SetLlmModel = useSetAtom(llmModelAtom);
+  const router = useRouter();
 
   const handleSelectChat = async (chatId: string) => {
+    router.push(`/?chatId=${chatId}`);
     setCurrentChatId(chatId);
     const selectedChat = await selectChat(chatId);
     if (selectedChat) {
