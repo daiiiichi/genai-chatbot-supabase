@@ -38,7 +38,7 @@ export default function AppSidebar() {
       <SidebarContent className="flex flex-col h-screen">
         {/* チャット管理機能（新規作成、検索、削除） */}
         <SidebarGroup>
-          <SidebarGroupLabel>genai-chatbot</SidebarGroupLabel>
+          <SidebarGroupLabel>Multi-Model Chatbot</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <NewChatButton />
