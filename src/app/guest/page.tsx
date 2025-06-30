@@ -1,7 +1,7 @@
 "use client";
 
-import AppHeader from "@/components/layout/app-header";
 import AppMain from "@/components/layout/app-main";
+import Image from "next/image";
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +12,10 @@ import {
   SidebarProvider,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -31,15 +33,37 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import { FilePlus2, Search, Trash2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  FilePlus2,
+  Search,
+  Trash2,
+  ChevronsUpDownIcon,
+  CheckIcon,
+  User,
+  AlertCircleIcon,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { sampleChatHistories } from "@/constants/guest-sample-chat-histories";
 import { useRouter } from "next/navigation";
 import { cn, toJST } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { sampleMessages } from "@/constants/guest-sample-messages";
+import useAuth from "@/hooks/use-auth";
 
 export default function GuestPage() {
   const [loading, setLoading] = useState(true);
@@ -47,6 +71,8 @@ export default function GuestPage() {
   const [currentChatId, setCurrentChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const router = useRouter();
+  const { signInWithGithub } = useAuth();
+  const llmModel = "o3-mini";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -67,6 +93,17 @@ export default function GuestPage() {
     }
     setSearchDialogOpen(false);
   };
+
+  const modelList = [
+    {
+      value: "o3-mini",
+      label: "gpt-o3-mini",
+      logo: "/icons/openai-logo.svg",
+    },
+  ];
+
+  const selectedModel = modelList.find((model) => model.value === llmModel);
+
   return (
     <SidebarProvider>
       <div className="flex w-full h-full">
@@ -266,9 +303,115 @@ export default function GuestPage() {
           </SidebarContent>
         </Sidebar>
 
-        {/* チャットメイン */}
+        {/* メイン */}
         <div className="flex flex-col flex-1 min-h-screen">
-          <AppHeader />
+          <div className="sticky top-0 z-50 flex flex-col">
+            {/* ヘッダー */}
+            <header className="bg-background/50 flex h-14 items-center gap-3 px-4 backdrop-blur-xl lg:h-[60px]">
+              {/* サイドバー開閉ボタン */}
+              <SidebarTrigger />
+              {/* <Alert variant="destructive" className="w-auto">
+                <AlertCircleIcon />
+                <AlertTitle>Guest Mode</AlertTitle>
+              </Alert> */}
+              {/* LLMモデル選択 */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className="w-[216px] justify-between"
+                  >
+                    {selectedModel ? (
+                      <div className="flex items-center">
+                        <Image
+                          src={selectedModel.logo}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="mr-3"
+                        />
+                        {selectedModel.label}
+                      </div>
+                    ) : (
+                      "Select LLM model..."
+                    )}
+                    <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[216px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search LLM model..." />
+                    <CommandList>
+                      <CommandEmpty>No LLM model found.</CommandEmpty>
+                      <CommandGroup>
+                        {modelList.map((model) => (
+                          <CommandItem
+                            key={model.value}
+                            value={model.value}
+                            onSelect={() => {}}
+                          >
+                            <CheckIcon
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                llmModel === model.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            <Image
+                              src={model.logo}
+                              alt=""
+                              width={16}
+                              height={16}
+                              className="mr-1"
+                            />
+                            {model.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {/* ユーザー情報 */}
+              <div className="ml-auto flex gap-4">
+                <Button variant="outline" onClick={signInWithGithub}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Login with GitHub for full access
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage />
+                      <AvatarFallback className="bg-primary">
+                        <User className="text-white" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="mt-2 w-72">
+                    <DropdownMenuItem className="py-3">
+                      <Avatar>
+                        <AvatarImage />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          <User className="text-white" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="ml-1 flex flex-col">
+                        <p className="text-sm font-medium">Guest</p>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </header>
+          </div>
           <AppMain />
         </div>
       </div>
