@@ -31,7 +31,7 @@ export default function LoginPage() {
           onClick={() => router.push("/guest")}
         >
           <LogIn />
-          Continue as Guest
+          Try Demo
         </Button>
       </div>
     </div>

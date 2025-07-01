@@ -77,7 +77,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { sampleChatHistories } from "@/constants/guest-sample-chat-histories";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn, toJST } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { sampleMessages } from "@/constants/guest-sample-messages";
@@ -86,12 +86,12 @@ import { sampleList } from "@/components/forms/main/sumple-prompt";
 import { sendMessageToLLM } from "@/lib/api/answer/send-message-to-llm";
 import MarkdownDisplay from "@/components/ui/markdown-display";
 import { TypingIndicator } from "@/components/ui/typing-indicator";
-import generateChatTitle from "@/lib/api/chat/generate-chat-title";
 import { v4 as uuidv4 } from "uuid";
 
 export default function GuestPage() {
   const [chatHistoriesLoading, setChatHistoriesLoading] = useState(true);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [llmSelectOpen, setLlmSelectOpen] = useState(false);
   const [currentChatId, setCurrentChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
@@ -468,30 +468,38 @@ export default function GuestPage() {
               <SidebarTrigger />
 
               {/* LLMモデル選択 */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-[216px] justify-between"
-                  >
-                    {selectedModel ? (
-                      <div className="flex items-center">
-                        <Image
-                          src={selectedModel.logo}
-                          alt=""
-                          width={16}
-                          height={16}
-                          className="mr-3"
-                        />
-                        {selectedModel.label}
-                      </div>
-                    ) : (
-                      "Select LLM model..."
-                    )}
-                    <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
+
+              <Popover open={llmSelectOpen} onOpenChange={setLlmSelectOpen}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-[216px] justify-between"
+                      >
+                        {selectedModel ? (
+                          <div className="flex items-center">
+                            <Image
+                              src={selectedModel.logo}
+                              alt=""
+                              width={16}
+                              height={16}
+                              className="mr-3"
+                            />
+                            {selectedModel.label}
+                          </div>
+                        ) : (
+                          "Select LLM model..."
+                        )}
+                        <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Limited models in Demo Mode.</p>
+                  </TooltipContent>
+                </Tooltip>
                 <PopoverContent className="w-[216px] p-0">
                   <Command>
                     <CommandInput placeholder="Search LLM model..." />
@@ -571,24 +579,27 @@ export default function GuestPage() {
                 {/* ゲストモード警告表示 */}
                 <Alert
                   variant="destructive"
-                  className={cn(messages.length === 0 ? "" : "hidden")}
+                  className={cn(messages.length === 0 ? "" : "w-auto mr-auto")}
                 >
                   <AlertCircleIcon />
-                  <AlertTitle>Guest Mode</AlertTitle>
-                  <AlertDescription>
-                    <p>
-                      ゲストモードでは一部の機能のみ利用可能です。GitHubでログインすると、すべての機能をご利用いただけます。
-                    </p>
-                    <ul className="list-inside list-disc text-sm">
-                      <li>
-                        会話履歴は保存されません。現在表示されている履歴はサンプルです。
-                      </li>
-                      <li>
-                        使用可能なLLMモデルは <code>gpt-o3-mini</code>{" "}
-                        のみです。ログインすると Gemini も使用可能になります。
-                      </li>
-                    </ul>
-                  </AlertDescription>
+                  <AlertTitle className="text-base">Demo Mode</AlertTitle>
+                  {messages.length === 0 && (
+                    <AlertDescription>
+                      <p>
+                        デモモードでは一部の機能のみ利用可能です。GitHubでログインすると、すべての機能をご利用いただけます。
+                      </p>
+                      <ul className="list-inside list-disc text-sm">
+                        <li>
+                          会話履歴は保存されません。現在表示されている履歴はサンプルです。
+                        </li>
+                        <li>
+                          使用可能なLLMモデルは <code>gpt-o3-mini</code>{" "}
+                          のみです。ログインすると Gemini や複数の GPT
+                          モデルも使用可能になります。
+                        </li>
+                      </ul>
+                    </AlertDescription>
+                  )}
                 </Alert>
 
                 {/* チャット吹き出し */}
@@ -670,7 +681,11 @@ export default function GuestPage() {
                   <div className="flex items-center justify-between gap-2 pt-2">
                     <FileUploadButton />
                     <div className="flex gap-4">
-                      <Badge variant={"outline"} style={{ cursor: "pointer" }}>
+                      <Badge
+                        variant={"outline"}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setLlmSelectOpen(true)}
+                      >
                         <CircleCheckBig />
                         {llmModel}
                       </Badge>
