@@ -129,7 +129,7 @@ export default function GuestPage() {
       setMessages(selectedChatMessages);
       console.log(selectedChatMessages);
     }
-    router.push(`/guest/?chatId=f8e84241-57ae-4777-ad9a-e38ae0b86468`);
+    router.push(`/guest/?chatId=${newChatId}`);
     return () => clearTimeout(timer);
   }, []);
 
@@ -185,7 +185,7 @@ export default function GuestPage() {
       return data.title as string;
     } catch (err) {
       console.error("タイトル生成に失敗しました:", err);
-      return ""; // fallback title
+      return "タイトル生成に失敗しました";
     }
   };
 
@@ -274,7 +274,7 @@ export default function GuestPage() {
                   {/* 新規作成ボタン */}
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <a>
+                      <a onClick={() => window.location.reload()}>
                         <FilePlus2 />
                         <span>New Chat</span>
                       </a>
