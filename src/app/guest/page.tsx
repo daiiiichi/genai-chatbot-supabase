@@ -1,6 +1,13 @@
 "use client";
 
-import AppMain from "@/components/layout/app-main";
+/**
+ * Guest Chat Page
+ * このファイルはゲスト用チャットデモページです。
+ * ログインなしでチャット機能を簡易的に試せるよう、
+ * あえてこの1ファイルで完結する構成にしています。
+ * 本番コードは責務ごとに分離されています。
+ */
+
 import Image from "next/image";
 import {
   Sidebar,
@@ -45,9 +52,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import FileUploadButton from "@/components/ui/file-upload-button";
 import {
   FilePlus2,
   Search,
@@ -56,29 +71,65 @@ import {
   CheckIcon,
   User,
   AlertCircleIcon,
+  CircleCheckBig,
+  ArrowUp,
+  MessageSquare,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sampleChatHistories } from "@/constants/guest-sample-chat-histories";
 import { useRouter } from "next/navigation";
 import { cn, toJST } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { sampleMessages } from "@/constants/guest-sample-messages";
 import useAuth from "@/hooks/use-auth";
+import { sampleList } from "@/components/forms/main/sumple-prompt";
+import { sendMessageToLLM } from "@/lib/api/answer/send-message-to-llm";
+import MarkdownDisplay from "@/components/ui/markdown-display";
+import { TypingIndicator } from "@/components/ui/typing-indicator";
+import generateChatTitle from "@/lib/api/chat/generate-chat-title";
+import { v4 as uuidv4 } from "uuid";
 
 export default function GuestPage() {
-  const [loading, setLoading] = useState(true);
+  const [chatHistoriesLoading, setChatHistoriesLoading] = useState(true);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [currentChatId, setCurrentChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userInput, setUserInput] = useState("");
+  const [isLlmLoading, setIsLlmLoading] = useState(false);
+  const [streamedAnswer, setStreamedAnswer] = useState("");
+  const [chatHistories, SetChatHistories] = useState(sampleChatHistories);
   const router = useRouter();
   const { signInWithGithub } = useAuth();
   const llmModel = "o3-mini";
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+      setChatHistoriesLoading(false);
+    }, 1500);
 
+    const newChatId = uuidv4();
+
+    const newChat = {
+      chat_session_id: newChatId,
+      created_at: new Date().toISOString(),
+      title: "New Chat",
+      updated_at: new Date().toISOString(),
+    };
+    SetChatHistories((prev) => [...prev, newChat]);
+    sampleMessages.push({
+      chat_session_id: newChatId,
+      messages: [],
+    });
+    setCurrentChatId(newChatId);
+    const selectedChatMessages =
+      sampleMessages.find((chat) => chat.chat_session_id === newChatId)
+        ?.messages || [];
+    if (selectedChatMessages) {
+      setMessages(selectedChatMessages);
+      console.log(selectedChatMessages);
+    }
+    router.push(`/guest/?chatId=f8e84241-57ae-4777-ad9a-e38ae0b86468`);
     return () => clearTimeout(timer);
   }, []);
 
@@ -90,6 +141,7 @@ export default function GuestPage() {
         ?.messages || [];
     if (selectedChatMessages) {
       setMessages(selectedChatMessages);
+      console.log(selectedChatMessages);
     }
     setSearchDialogOpen(false);
   };
@@ -103,6 +155,110 @@ export default function GuestPage() {
   ];
 
   const selectedModel = modelList.find((model) => model.value === llmModel);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const generateChatTitle = async (
+    assistantMessage: Message
+  ): Promise<string> => {
+    try {
+      const res = await fetch("/api/guest/generate-title", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assistantMessage,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate title");
+      }
+
+      const data = await res.json();
+      return data.title as string;
+    } catch (err) {
+      console.error("タイトル生成に失敗しました:", err);
+      return ""; // fallback title
+    }
+  };
+
+  const sendMessage = async () => {
+    // ユーザーメッセージの成型とメッセージ送信時の前準備
+    const userMessageObj: Message = {
+      role: "user",
+      content: userInput,
+      llm_model: null,
+    };
+    const addUserMessages: Message[] = [...messages, userMessageObj];
+    setMessages(addUserMessages);
+    const currentMesaages = sampleMessages.find(
+      (s) => s.chat_session_id === currentChatId
+    );
+
+    currentMesaages?.messages.push(userMessageObj);
+    setStreamedAnswer("");
+    setIsLlmLoading(true);
+    setUserInput("");
+
+    try {
+      const answer = await sendMessageToLLM({
+        messages: addUserMessages,
+        modelName: llmModel,
+        onChunk: (chunk) => {
+          setStreamedAnswer((prev) => prev + chunk);
+        },
+      });
+
+      setIsLlmLoading(false);
+
+      const assistantAnswerObj: Message = {
+        role: "assistant",
+        content: answer,
+        llm_model: llmModel,
+      };
+      const addAssistantMessages: Message[] = [
+        ...addUserMessages,
+        assistantAnswerObj,
+      ];
+      setMessages(addAssistantMessages);
+
+      currentMesaages?.messages.push(assistantAnswerObj);
+
+      setStreamedAnswer("");
+
+      const newChatTitle = await generateChatTitle(assistantAnswerObj);
+
+      const chat = chatHistories.find(
+        (item) => item.chat_session_id === currentChatId
+      );
+
+      if (chat) {
+        chat.title = newChatTitle;
+        chat.updated_at = new Date().toISOString();
+
+        SetChatHistories([...chatHistories]);
+      }
+    } catch (err: unknown) {
+      console.error("チャット送信中にエラー:", err);
+      alert(
+        "メッセージの送信中にエラーが発生しました。\n再読み込みをしてから再度実行をお願いします。"
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, streamedAnswer]);
 
   return (
     <SidebarProvider>
@@ -141,7 +297,7 @@ export default function GuestPage() {
                       <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup heading="chat">
-                          {sampleChatHistories
+                          {chatHistories
                             .sort(
                               (a, b) =>
                                 new Date(b.updated_at).getTime() -
@@ -215,12 +371,12 @@ export default function GuestPage() {
               <SidebarGroupContent className="h-full">
                 <div className="h-full overflow-y-auto pr-2 pb-8">
                   <SidebarMenu>
-                    {loading ? (
+                    {chatHistoriesLoading ? (
                       <div className="mt-4">
                         <Spinner className="text-primary" />
                       </div>
                     ) : (
-                      sampleChatHistories
+                      chatHistories
                         .sort(
                           (a, b) =>
                             new Date(b.updated_at).getTime() -
@@ -310,10 +466,7 @@ export default function GuestPage() {
             <header className="bg-background/50 flex h-14 items-center gap-3 px-4 backdrop-blur-xl lg:h-[60px]">
               {/* サイドバー開閉ボタン */}
               <SidebarTrigger />
-              {/* <Alert variant="destructive" className="w-auto">
-                <AlertCircleIcon />
-                <AlertTitle>Guest Mode</AlertTitle>
-              </Alert> */}
+
               {/* LLMモデル選択 */}
               <Popover>
                 <PopoverTrigger asChild>
@@ -412,7 +565,160 @@ export default function GuestPage() {
               </div>
             </header>
           </div>
-          <AppMain />
+          <div className="p-4">
+            <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">
+              <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
+                {/* ゲストモード警告表示 */}
+                <Alert
+                  variant="destructive"
+                  className={cn(messages.length === 0 ? "" : "hidden")}
+                >
+                  <AlertCircleIcon />
+                  <AlertTitle>Guest Mode</AlertTitle>
+                  <AlertDescription>
+                    <p>
+                      ゲストモードでは一部の機能のみ利用可能です。GitHubでログインすると、すべての機能をご利用いただけます。
+                    </p>
+                    <ul className="list-inside list-disc text-sm">
+                      <li>
+                        会話履歴は保存されません。現在表示されている履歴はサンプルです。
+                      </li>
+                      <li>
+                        使用可能なLLMモデルは <code>gpt-o3-mini</code>{" "}
+                        のみです。ログインすると Gemini も使用可能になります。
+                      </li>
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+
+                {/* チャット吹き出し */}
+                <div
+                  ref={chatContainerRef}
+                  className={cn(
+                    "flex-col overflow-y-auto relative w-full flex-1 space-y-4 pe-2",
+                    messages.length > 0 ? "flex" : "hidden"
+                  )}
+                >
+                  {messages
+                    .filter((msg) => msg.role !== "system")
+                    .map((msg, idx) => (
+                      <div
+                        key={idx}
+                        className={cn(
+                          "flex gap-3",
+                          msg.role === "user" ? "justify-end" : "justify-start"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            msg.role === "user"
+                              ? "ml-auto max-w-[75%]"
+                              : "mr-auto max-w-[95%]"
+                          )}
+                        >
+                          {/* アシスタントのメッセージにLLMモデルの種類の表示 */}
+                          {msg.role === "assistant" && (
+                            <Badge className="mb-1" variant={"outline"}>
+                              <MessageSquare />
+                              {msg.llm_model}
+                            </Badge>
+                          )}
+                          <div
+                            className={cn(
+                              "break-words whitespace-pre-wrap rounded-lg px-3 py-2",
+                              msg.role === "user"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-foreground border"
+                            )}
+                          >
+                            {/* アシスタントのメッセージのみマークダウン表示 */}
+                            {msg.role === "assistant" ? (
+                              <MarkdownDisplay content={msg.content} />
+                            ) : (
+                              msg.content
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                  {/* 回答生成前のインジケーター　および　ストリームで返答される回答を表示する場合 */}
+                  {isLlmLoading && (
+                    <div className="flex gap-3 justify-start">
+                      <div className="max-w-[95%] justify-end">
+                        <div className="break-words whitespace-normal rounded-lg px-3 py-2 bg-muted text-foreground border">
+                          {streamedAnswer ? (
+                            <MarkdownDisplay content={streamedAnswer} />
+                          ) : (
+                            <TypingIndicator />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* テキスト入力欄 */}
+                <div className="border-input bg-background rounded-3xl border p-2 shadow-xs w-full max-w-(--breakpoint-md)">
+                  <Textarea
+                    className="border-none shadow-none resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    placeholder="Ask me anything..."
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <div className="flex items-center justify-between gap-2 pt-2">
+                    <FileUploadButton />
+                    <div className="flex gap-4">
+                      <Badge variant={"outline"} style={{ cursor: "pointer" }}>
+                        <CircleCheckBig />
+                        {llmModel}
+                      </Badge>
+                      {/* 送信ボタン */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="submit"
+                            onClick={sendMessage}
+                            title="Send Message"
+                            className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all
+            disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:shrink-0 [&_svg]:size-4 
+            outline-none focus-visible:border-ring focus-visible:ring-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 
+            aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 size-9 h-8 w-8 rounded-full"
+                            data-state="closed"
+                            disabled={!userInput.trim()}
+                          >
+                            <ArrowUp className="lucide lucide-arrow-up" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Send Message</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </div>
+
+                {/* サンプルプロンプト */}
+                <div
+                  className={cn(
+                    "space-x-2 space-y-2 m-2",
+                    messages.length > 0 ? "hidden" : ""
+                  )}
+                >
+                  {sampleList.map((sample) => (
+                    <Button
+                      variant="outline"
+                      key={sample.id}
+                      onClick={() => setUserInput(sample.text)}
+                    >
+                      <sample.icon /> {sample.text}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </SidebarProvider>

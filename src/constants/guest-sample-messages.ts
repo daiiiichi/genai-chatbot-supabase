@@ -156,11 +156,6 @@ export default App;
         content: "おいしいカレーのレシピを教えて",
         llm_model: "",
       },
-    ],
-  },
-  {
-    chat_session_id: "",
-    messages: [
       {
         role: "assistant",
         content: `カレー作り、楽しみですね！ 🍛 美味しいカレーのレシピをいくつかご紹介します。今回は基本のレシピと、アレンジレシピをいくつか提案しますね。
