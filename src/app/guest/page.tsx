@@ -1,14 +1,16 @@
 "use client";
 
 /**
- * Guest Chat Page
- * このファイルはゲスト用チャットデモページです。
+ * Demo Chat Page
+ * このファイルはデモ用チャットデモページです。
  * ログインなしでチャット機能を簡易的に試せるよう、
  * あえてこの1ファイルで完結する構成にしています。
  * 本番コードは責務ごとに分離されています。
  */
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -63,6 +65,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import FileUploadButton from "@/components/ui/file-upload-button";
+import MarkdownDisplay from "@/components/ui/markdown-display";
+import { TypingIndicator } from "@/components/ui/typing-indicator";
 import {
   FilePlus2,
   Search,
@@ -75,17 +79,13 @@ import {
   ArrowUp,
   MessageSquare,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
 import { sampleChatHistories } from "@/constants/guest-sample-chat-histories";
-import { usePathname, useRouter } from "next/navigation";
 import { cn, toJST } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { sampleMessages } from "@/constants/guest-sample-messages";
 import useAuth from "@/hooks/use-auth";
 import { sampleList } from "@/components/forms/main/sumple-prompt";
 import { sendMessageToLLM } from "@/lib/api/answer/send-message-to-llm";
-import MarkdownDisplay from "@/components/ui/markdown-display";
-import { TypingIndicator } from "@/components/ui/typing-indicator";
 import { v4 as uuidv4 } from "uuid";
 
 export default function GuestPage() {
@@ -116,19 +116,24 @@ export default function GuestPage() {
       title: "New Chat",
       updated_at: new Date().toISOString(),
     };
+
     SetChatHistories((prev) => [...prev, newChat]);
+
     sampleMessages.push({
       chat_session_id: newChatId,
       messages: [],
     });
+
     setCurrentChatId(newChatId);
+
     const selectedChatMessages =
       sampleMessages.find((chat) => chat.chat_session_id === newChatId)
         ?.messages || [];
+
     if (selectedChatMessages) {
       setMessages(selectedChatMessages);
-      console.log(selectedChatMessages);
     }
+
     router.push(`/guest/?chatId=${newChatId}`);
     return () => clearTimeout(timer);
   }, []);
@@ -190,7 +195,6 @@ export default function GuestPage() {
   };
 
   const sendMessage = async () => {
-    // ユーザーメッセージの成型とメッセージ送信時の前準備
     const userMessageObj: Message = {
       role: "user",
       content: userInput,
@@ -280,6 +284,7 @@ export default function GuestPage() {
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+
                   {/* チャット履歴検索ボタン */}
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
@@ -468,7 +473,6 @@ export default function GuestPage() {
               <SidebarTrigger />
 
               {/* LLMモデル選択 */}
-
               <Popover open={llmSelectOpen} onOpenChange={setLlmSelectOpen}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -536,7 +540,7 @@ export default function GuestPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* ユーザー情報 */}
+              {/* ログインボタン */}
               <div className="ml-auto flex gap-4">
                 <Button variant="outline" onClick={signInWithGithub}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -547,6 +551,8 @@ export default function GuestPage() {
                   </svg>
                   Login with GitHub for full access
                 </Button>
+
+                {/* ユーザー情報 */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-3">
                     <Avatar>
@@ -573,6 +579,8 @@ export default function GuestPage() {
               </div>
             </header>
           </div>
+
+          {/* チャットメイン */}
           <div className="p-4">
             <div className="m-auto flex h-[calc(100vh-6rem)] w-full max-w-(--breakpoint-md) items-center justify-center">
               <div className="flex h-full w-full flex-col items-center justify-center space-y-4">
@@ -603,6 +611,7 @@ export default function GuestPage() {
                 </Alert>
 
                 {/* チャット吹き出し */}
+                {/* 通常表示 */}
                 <div
                   ref={chatContainerRef}
                   className={cn(
@@ -642,7 +651,6 @@ export default function GuestPage() {
                                 : "bg-muted text-foreground border"
                             )}
                           >
-                            {/* アシスタントのメッセージのみマークダウン表示 */}
                             {msg.role === "assistant" ? (
                               <MarkdownDisplay content={msg.content} />
                             ) : (
@@ -680,6 +688,8 @@ export default function GuestPage() {
                   />
                   <div className="flex items-center justify-between gap-2 pt-2">
                     <FileUploadButton />
+
+                    {/* LLMモデル表示 */}
                     <div className="flex gap-4">
                       <Badge
                         variant={"outline"}
@@ -689,6 +699,7 @@ export default function GuestPage() {
                         <CircleCheckBig />
                         {llmModel}
                       </Badge>
+
                       {/* 送信ボタン */}
                       <Tooltip>
                         <TooltipTrigger asChild>
