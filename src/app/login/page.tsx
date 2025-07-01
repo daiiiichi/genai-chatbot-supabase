@@ -2,15 +2,20 @@
 
 import useAuth from "@/hooks/use-auth";
 import { Button } from "../../components/ui/button";
+import { LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { signInWithGithub } = useAuth();
+  const router = useRouter();
 
   return (
     <div className="flex flex-1 items-center justify-center min-h-screen">
       <div className="w-full max-w-xs">
         <div className="flex flex-col items-center text-center mb-4">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
+          <h1 className="text-2xl font-bold">
+            Login to your account or try the demo mode.
+          </h1>
         </div>
 
         <Button variant="outline" className="w-full" onClick={signInWithGithub}>
@@ -21,6 +26,14 @@ export default function LoginPage() {
             />
           </svg>
           Login with GitHub
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full mt-2"
+          onClick={() => router.push("/guest")}
+        >
+          <LogIn />
+          Try Demo
         </Button>
       </div>
     </div>
