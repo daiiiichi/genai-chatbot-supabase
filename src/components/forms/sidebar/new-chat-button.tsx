@@ -31,7 +31,7 @@ export default function NewChatButton() {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
-        <a onClick={handleNewChat}>
+        <a onClick={handleNewChat} className="cursor-pointer">
           <FilePlus2 />
           <span>New Chat</span>
         </a>

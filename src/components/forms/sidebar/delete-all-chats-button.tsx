@@ -46,7 +46,7 @@ export default function DeleteAllChatsButton() {
       <SidebarMenuButton asChild>
         <Dialog>
           <DialogTrigger asChild>
-            <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-destructive h-8 text-sm">
+            <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-destructive h-8 text-sm cursor-pointer">
               <Trash2 size={16} />
               <span>Delete All Chats</span>
             </a>

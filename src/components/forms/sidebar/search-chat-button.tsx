@@ -44,7 +44,7 @@ export default function SearchChatButton() {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
-        <a onClick={() => setSearchDialogOpen(true)}>
+        <a onClick={() => setSearchDialogOpen(true)} className="cursor-pointer">
           <Search />
           <span>Search Chat</span>
         </a>
