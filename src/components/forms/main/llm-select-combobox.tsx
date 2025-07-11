@@ -68,6 +68,7 @@ export function LLMSelectCombobox() {
                     SetLlmModel(model.value);
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
                   <CheckIcon
                     className={cn(

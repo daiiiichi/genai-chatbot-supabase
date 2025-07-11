@@ -278,7 +278,10 @@ export default function GuestPage() {
                   {/* 新規作成ボタン */}
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <a onClick={() => window.location.reload()}>
+                      <a
+                        onClick={() => window.location.reload()}
+                        className="cursor-pointer"
+                      >
                         <FilePlus2 />
                         <span>New Chat</span>
                       </a>
@@ -288,7 +291,10 @@ export default function GuestPage() {
                   {/* チャット履歴検索ボタン */}
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <a onClick={() => setSearchDialogOpen(true)}>
+                      <a
+                        onClick={() => setSearchDialogOpen(true)}
+                        className="cursor-pointer"
+                      >
                         <Search />
                         <span>Search Chat</span>
                       </a>
@@ -328,7 +334,7 @@ export default function GuestPage() {
                     <SidebarMenuButton asChild>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-destructive h-8 text-sm">
+                          <a className="flex w-full items-center gap-2 rounded-md p-2 text-left outline-hidden hover:bg-sidebar-accent hover:text-destructive h-8 text-sm cursor-pointer">
                             <Trash2 size={16} />
                             <span>Delete All Chats</span>
                           </a>
@@ -392,7 +398,7 @@ export default function GuestPage() {
                             <SidebarMenuButton asChild>
                               <div
                                 className={cn(
-                                  "h-auto",
+                                  "h-auto cursor-pointer",
                                   currentChatId === data.chat_session_id &&
                                     "bg-gray-100 dark:bg-neutral-800"
                                 )}
@@ -515,6 +521,7 @@ export default function GuestPage() {
                             key={model.value}
                             value={model.value}
                             onSelect={() => {}}
+                            className="cursor-pointer"
                           >
                             <CheckIcon
                               className={cn(

@@ -50,7 +50,7 @@ export default function ChatHistoryList() {
             <SidebarMenuButton asChild>
               <div
                 className={cn(
-                  "h-auto",
+                  "h-auto cursor-pointer",
                   currentChatId === data.chat_session_id &&
                     "bg-gray-100 dark:bg-neutral-800"
                 )}
